@@ -67,14 +67,18 @@ variable "ipv4_address" {
 }
 
 variable "gateway" {
-  type = bool
+  type = string
   description = "IPv4 Gateway"
-  default = false
+  default = null
 }
 
 variable "ssh_public_keys" {
   type = list(string)
   default = []
+}
+
+variable "root_password" {
+  type = string
 }
 
 variable "unprivileged" {
