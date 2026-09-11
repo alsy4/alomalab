@@ -1,0 +1,133 @@
+---
+# Installs Jellyfin on the `jellyfin` inventory host and publishes it through
+# Caddy on the `piloma` inventory host.
+#
+# Run from the repository root:
+#   ansible-playbook -i ansible/inventory/homelab.yml ansible/playbooks/setup-jellyfin.yml
+
+- name: Install and start Jellyfin
+  hosts: jellyfin
+  become: true
+  gather_facts: true
+
+  vars:
+    jellyfin_keyring: /etc/apt/keyrings/jellyfin.gpg
+    jellyfin_repository: /etc/apt/sources.list.d/jellyfin.sources
+    jellyfin_repository_os: "{{ ansible_facts.distribution | lower }}"
+
+  pre_tasks:
+    - name: Require a Debian-based Jellyfin host
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.distribution in ['Debian', 'Ubuntu']
+        fail_msg: This playbook installs Jellyfin from its official Debian or Ubuntu APT repository.
+
+  tasks:
+    - name: Install Jellyfin repository prerequisites
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+        update_cache: true
+
+    - name: Create the APT keyring directory
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Install the Jellyfin repository signing key
+      ansible.builtin.shell:
+        cmd: >-
+          curl --fail --silent --show-error --location
+          https://repo.jellyfin.org/jellyfin_team.gpg.key |
+          gpg --dearmor --yes --output {{ jellyfin_keyring }}
+        creates: "{{ jellyfin_keyring }}"
+
+    - name: Configure the Jellyfin APT repository
+      ansible.builtin.copy:
+        dest: "{{ jellyfin_repository }}"
+        mode: '0644'
+        content: |
+          Types: deb
+          URIs: https://repo.jellyfin.org/{{ jellyfin_repository_os }}
+          Suites: {{ ansible_facts.distribution_release }}
+          Components: main
+          Architectures: {{ ansible_facts.architecture | replace('x86_64', 'amd64') | replace('aarch64', 'arm64') }}
+          Signed-By: {{ jellyfin_keyring }}
+      register: jellyfin_repository_config
+
+    - name: Update APT after adding the Jellyfin repository
+      ansible.builtin.apt:
+        update_cache: true
+      when: jellyfin_repository_config.changed
+
+    - name: Install Jellyfin
+      ansible.builtin.apt:
+        name: jellyfin
+        state: present
+
+    - name: Enable and start Jellyfin
+      ansible.builtin.service:
+        name: jellyfin
+        state: started
+        enabled: true
+
+    - name: Wait for Jellyfin to accept local connections
+      ansible.builtin.wait_for:
+        host: 127.0.0.1
+        port: 8096
+        timeout: 60
+
+- name: Configure Piloma as the Jellyfin reverse proxy
+  hosts: reverse_proxy
+  become: true
+  gather_facts: true
+
+  vars:
+    jellyfin_hostname: jellyfin.alomalab.internal
+    jellyfin_upstream_host: "{{ hostvars['jellyfin'].ansible_host | default('jellyfin') }}"
+    jellyfin_upstream_port: 8096
+    caddyfile: /etc/caddy/Caddyfile
+
+  pre_tasks:
+  tasks:
+    - name: Require an existing Caddyfile
+      ansible.builtin.stat:
+        path: "{{ caddyfile }}"
+      register: caddyfile_status
+
+    - name: Stop when Caddy's configuration file is absent
+      ansible.builtin.assert:
+        that: caddyfile_status.stat.exists
+        fail_msg: "Caddyfile not found at {{ caddyfile }} on Piloma. Set caddyfile to its actual path."
+
+    - name: Add the Jellyfin site to Caddy
+      ansible.builtin.blockinfile:
+        path: "{{ caddyfile }}"
+        marker: "# {mark} ANSIBLE MANAGED JELLYFIN"
+        block: |
+          {{ jellyfin_hostname }} {
+              tls internal
+              reverse_proxy {{ jellyfin_upstream_host }}:{{ jellyfin_upstream_port }}
+          }
+      notify: Validate and reload Caddy
+
+    - name: Enable and start Caddy
+      ansible.builtin.service:
+        name: caddy
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Validate and reload Caddy
+      ansible.builtin.command: "caddy validate --config {{ caddyfile }} --adapter caddyfile"
+      changed_when: false
+      notify: Reload Caddy
+
+    - name: Reload Caddy
+      ansible.builtin.service:
+        name: caddy
+        state: reloaded
