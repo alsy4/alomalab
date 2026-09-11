@@ -16,6 +16,7 @@ module "nas" {
   swap             = 512
   disk_size        = 8
 
+
   bridge       = "vmbr0"
   ipv4_address = "192.168.0.102/24"
   gateway      = "192.168.0.1"

@@ -1,4 +1,15 @@
 resource "proxmox_virtual_environment_container" "this" {
+
+  dynamic "mount_point" {
+    for_each = var.mount_points
+
+    content {
+      volume = mount_point.value.volume
+      path = mount_point.value.path
+      read_only = mount_point.value.read_only
+    }
+  }
+
   node_name = var.node_name
   vm_id     = var.vm_id
 
