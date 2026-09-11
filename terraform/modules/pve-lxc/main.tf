@@ -20,7 +20,7 @@ resource "proxmox_virtual_environment_container" "this" {
   }
 
   operating_system {
-    type = "debian"
+    type             = "debian"
     template_file_id = var.template_file_id
   }
 
@@ -35,13 +35,13 @@ resource "proxmox_virtual_environment_container" "this" {
     }
 
     user_account {
-      keys = var.ssh_public_keys
+      keys     = var.ssh_public_keys
       password = var.root_password
     }
   }
 
   network_interface {
-    name = "eth0"
+    name   = "eth0"
     bridge = var.bridge
   }
 }

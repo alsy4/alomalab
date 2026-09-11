@@ -16,7 +16,7 @@ module "nas" {
   swap             = 512
   disk_size        = 8
 
-  bridge       = "vmbr0"
+  bridge = "vmbr0"
 
   unprivileged = true
 

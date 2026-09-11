@@ -25,7 +25,7 @@ variable "template_file_id" {
 }
 
 variable "datastore_id" {
-  type = string
+  type    = string
   default = "local-lvm"
 }
 
@@ -51,29 +51,29 @@ variable "floating_memory" {
 }
 
 variable "swap" {
-  type = number
+  type    = number
   default = 0
 }
 
 variable "bridge" {
-  type = string
+  type        = string
   description = "Network interfaces"
-  default = "vmbr0"
+  default     = "vmbr0"
 }
 
 variable "ipv4_address" {
-  type = string
+  type    = string
   default = "dhcp"
 }
 
 variable "gateway" {
-  type = string
+  type        = string
   description = "IPv4 Gateway"
-  default = null
+  default     = null
 }
 
 variable "ssh_public_keys" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
@@ -82,15 +82,15 @@ variable "root_password" {
 }
 
 variable "unprivileged" {
-  type = bool
+  type    = bool
   default = true
 }
 
 variable "mount_points" {
   type = list(
     object({
-      volume = string
-      path = string
+      volume    = string
+      path      = string
       read_only = optional(bool, false)
     })
   )
