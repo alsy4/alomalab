@@ -1,0 +1,21 @@
+all:
+  vars:
+    ansible_user: root
+  children:
+    debian_lxc:
+      hosts:
+        jellyfin:
+          ansible_host: 192.168.0.103
+        nas:
+          ansible_host: 192.168.0.102
+    
+    reverse_proxy:
+      hosts:
+        piloma:
+          ansible_host: 192.168.0.14
+          ansible_user: syahiralimi
+
+    proxmox_nodes:
+      hosts:
+        proxmox:
+          ansible_host: 192.168.0.20
