@@ -1,0 +1,23 @@
+---
+- name: Update Debian LXC Containers
+  hosts: debian_lxc
+  become: true # Enable non-root to execute without sudo
+
+  tasks:
+    - name: Update apt package
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+    
+    - name: Upgrade apt package
+      ansible.builtin.apt:
+        upgrade: dist
+    
+    - name: Remove unwanted dependencies
+      ansible.builtin.apt:
+        autoremove: yes
+        purge: true
+
+    - name: Clean cache
+      ansible.builtin.apt:
+        clean: yes

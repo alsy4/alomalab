@@ -1,0 +1,78 @@
+---
+# Configure Proxmox bind mounts for the Jellyfin LXC (VMID 103).
+#
+# Run from the repository root:
+#   ansible-playbook -i ansible/inventory/homelab.yml \
+#     ansible/playbooks/setup-mount-points.yml
+
+- name: Configure Jellyfin bind mounts on Proxmox
+  hosts: proxmox_nodes
+  become: true
+  gather_facts: false
+
+  vars:
+    jellyfin_vmid: 103
+    jellyfin_mount_points:
+      - slot: 0
+        source: /mnt/hdd/media
+        target: /mnt/media
+        config_pattern: '(?m)^mp0: /mnt/hdd/media,.*mp=/mnt/media.*ro=1'
+      - slot: 1
+        source: /mnt/hdd/shared
+        target: /mnt/shared
+        config_pattern: '(?m)^mp1: /mnt/hdd/shared,.*mp=/mnt/shared.*ro=1'
+
+  tasks:
+    - name: Check that the Jellyfin container exists
+      ansible.builtin.command:
+        argv:
+          - pct
+          - status
+          - "{{ jellyfin_vmid }}"
+      changed_when: false
+      register: jellyfin_status
+
+    - name: Read the Jellyfin container configuration
+      ansible.builtin.command:
+        argv:
+          - pct
+          - config
+          - "{{ jellyfin_vmid }}"
+      changed_when: false
+      register: jellyfin_config
+
+    - name: Refuse to overwrite an existing different mount point
+      ansible.builtin.assert:
+        that:
+          - >-
+            jellyfin_config.stdout is not search('(?m)^mp' ~ item.slot ~ ':')
+            or jellyfin_config.stdout is search(item.config_pattern)
+        fail_msg: >-
+          mp{{ item.slot }} is already assigned to a different mount. Inspect
+          `pct config {{ jellyfin_vmid }}` and select an unused slot instead.
+      loop: "{{ jellyfin_mount_points }}"
+      loop_control:
+        label: "mp{{ item.slot }}"
+
+    - name: Add missing Jellyfin bind mounts
+      ansible.builtin.command:
+        argv:
+          - pct
+          - set
+          - "{{ jellyfin_vmid }}"
+          - "-mp{{ item.slot }}"
+          - "{{ item.source }},mp={{ item.target }},ro=1"
+      when: jellyfin_config.stdout is not search(item.config_pattern)
+      loop: "{{ jellyfin_mount_points }}"
+      loop_control:
+        label: "{{ item.source }} -> {{ item.target }}"
+      notify: Restart Jellyfin container
+
+  handlers:
+    - name: Restart Jellyfin container
+      ansible.builtin.command:
+        argv:
+          - pct
+          - reboot
+          - "{{ jellyfin_vmid }}"
+      when: "jellyfin_status.stdout is search('status: running')"
