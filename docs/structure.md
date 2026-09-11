@@ -48,6 +48,15 @@ pct set <VM-ID> -mp0 /mnt/hdd/media,mp=/mnt/media
 ```
 
 ## Remove accidentally committed file
-1. 
+1. git filter-repo
+2. rebase
+
+## Ansible
+1. create inventory
+   1. Store host
+2. scripts
+   1. Update packages
+   2. setup jellyfin
+   3. setup mount points
 
 # 3. Create NAS
