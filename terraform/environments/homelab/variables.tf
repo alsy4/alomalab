@@ -6,7 +6,7 @@ variable "proxmox_endpoint" {
 variable "proxmox_api_token" {
   description = "API_TOKEN"
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 variable "proxmox_node" {
@@ -26,6 +26,11 @@ variable "template_datastore" {
   default     = "local"
 }
 
+variable "template_file_id" {
+  type        = string
+  description = "File id for template file, get it by `pveam list local`"
+}
+
 variable "lxc_datastore" {
   type        = string
   description = "Datastore for LXC root fs"
@@ -33,6 +38,6 @@ variable "lxc_datastore" {
 }
 
 variable "root_password" {
-  type = string
+  type      = string
   sensitive = true
 }

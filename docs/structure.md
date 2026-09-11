@@ -29,8 +29,25 @@ homelab/
 # 2. Provisioning Debian LXC for Jellyfin
 Steps:
 1. Modules
-2. Environments
-3. tfvars
-4. 
+2. variables
+3. Environments
+4. tfvars
+
+```terraform
+tf init
+tf apply
+tf state
+tf destroy
+```
+
+1. Create mountpoints
+2. Attach it to containers
+```bash
+pct set <VM-ID> -mp0 /mnt/hdd/shared,mp=/mnt/shared
+pct set <VM-ID> -mp0 /mnt/hdd/media,mp=/mnt/media
+```
+
+## Remove accidentally committed file
+1. 
 
 # 3. Create NAS

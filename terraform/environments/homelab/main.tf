@@ -8,15 +8,17 @@ module "nas" {
 
   description = "NAS server - managed by Terraform"
 
-  template_file_id = proxmox_download_file.debian_13_lxc.id
+  template_file_id = var.template_file_id
   datastore_id     = var.lxc_datastore
 
   cpu_core         = 1
-  dedicated_memory = 2048
+  dedicated_memory = 512
   swap             = 512
   disk_size        = 8
 
-  bridge = "vmbr0"
+  bridge       = "vmbr0"
+  ipv4_address = "192.168.0.102/24"
+  gateway      = "192.168.0.1"
 
   unprivileged = true
 
@@ -26,9 +28,30 @@ module "nas" {
   root_password = var.root_password
 }
 
-resource "proxmox_download_file" "debian_13_lxc" {
-  node_name    = var.proxmox_node
-  content_type = "vztmpl" #Container templates
-  url          = "https://images.linuxcontainers.org/images/debian/trixie/amd64/cloud/20260910_05:24/rootfs.tar.xz"
-  datastore_id = var.template_datastore
+module "jellyfin" {
+  source = "../../modules/pve-lxc"
+
+  node_name   = var.proxmox_node
+  hostname    = "jellyfin"
+  vm_id       = 103
+  description = "Jellyfin Server - Managed by Terraform"
+
+  template_file_id = var.template_file_id
+  datastore_id     = var.lxc_datastore
+  root_password    = var.root_password
+
+  bridge       = "vmbr0"
+  ipv4_address = "192.168.0.103/24"
+  gateway      = "192.168.0.1"
+
+  cpu_core         = 2
+  dedicated_memory = 2048
+  swap             = 1024
+  disk_size        = 16
+
+  unprivileged = true
+
+  ssh_public_keys = [
+    var.ssh_public_key
+  ]
 }
