@@ -7,6 +7,7 @@ resource "proxmox_virtual_environment_container" "this" {
       volume = mount_point.value.volume
       path = mount_point.value.path
       read_only = mount_point.value.read_only
+      shared = mount_point.value.shared
     }
   }
 
@@ -15,6 +16,10 @@ resource "proxmox_virtual_environment_container" "this" {
 
   description  = var.description
   unprivileged = var.unprivileged
+
+  features {
+    nesting = true
+  }
 
   cpu {
     cores = var.cpu_core

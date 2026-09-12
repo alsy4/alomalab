@@ -92,6 +92,7 @@ variable "mount_points" {
       volume    = string
       path      = string
       read_only = optional(bool, false)
+      shared = optional(bool, false)
     })
   )
 
