@@ -21,7 +21,7 @@
     qbittorrent_user: qbittorrent
     qbittorrent_group: qbittorrent
     qbittorrent_data_dir: /var/lib/qbittorrent
-    qbittorrent_download_dir: /var/lib/qbittorrent/downloads
+    qbittorrent_download_dir: /mnt/hdd/shared/torrents
     qbittorrent_webui_address: 0.0.0.0
     qbittorrent_webui_port: 8080
     qbittorrent_service_file: /etc/systemd/system/qbittorrent.service

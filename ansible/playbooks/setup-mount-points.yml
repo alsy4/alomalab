@@ -12,6 +12,8 @@
 
   vars:
     jellyfin_vmid: 103
+    jellyfin_shared_directories:
+      - /mnt/hdd/shared/torrents
     jellyfin_mount_points:
       - slot: 0
         source: /mnt/hdd/media
@@ -36,6 +38,17 @@
           - "{{ jellyfin_vmid }}"
       changed_when: false
       register: jellyfin_status
+
+    - name: Create shared directories for the Jellyfin container
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      loop: "{{ jellyfin_shared_directories }}"
+      loop_control:
+        label: "{{ item }} -> /mnt/shared/{{ item | basename }}"
 
     - name: Read the Jellyfin container configuration
       ansible.builtin.command:
