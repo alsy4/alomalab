@@ -16,11 +16,16 @@
       - slot: 0
         source: /mnt/hdd/media
         target: /mnt/media
-        config_pattern: '(?m)^mp0: /mnt/hdd/media,.*mp=/mnt/media.*ro=1'
+        config_pattern: '(?m)^mp0: /mnt/hdd/media,.*mp=/mnt/media'
       - slot: 1
         source: /mnt/hdd/shared
         target: /mnt/shared
-        config_pattern: '(?m)^mp1: /mnt/hdd/shared,.*mp=/mnt/shared.*ro=1'
+        config_pattern: '(?m)^mp1: /mnt/hdd/shared,.*mp=/mnt/shared'
+      - slot: 2
+        source: /mnt/hdd/media/media-2
+        target: /mnt/media-2
+        config_pattern: '(?m)^mp2: /mnt/hdd/media/media-2,.*mp=/mnt/media-2'
+
 
   tasks:
     - name: Check that the Jellyfin container exists
