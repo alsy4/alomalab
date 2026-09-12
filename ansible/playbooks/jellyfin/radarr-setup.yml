@@ -1,0 +1,154 @@
+---
+# Install the current stable Radarr release on the Jellyfin Debian LXC.
+#
+# Run from the repository root:
+#   ansible-playbook -i ansible/inventory/homelab.yml ansible/playbooks/radarr-setup.yml
+#
+# Radarr needs read/write access to its movie root folder and download-client
+# directory. The current /mnt/media LXC bind mount is read-only, so change that
+# mount before asking Radarr to import, rename, or move media there.
+
+- name: Install and start Radarr
+  hosts: jellyfin
+  become: true
+  gather_facts: true
+
+  vars:
+    radarr_user: radarr
+    radarr_group: media
+    radarr_install_dir: /opt/Radarr
+    radarr_data_dir: /var/lib/radarr
+    radarr_port: 7878
+    radarr_architectures:
+      x86_64: x64
+      aarch64: arm64
+      armv7l: arm
+      armv6l: arm
+    radarr_arch: "{{ radarr_architectures.get(ansible_facts.architecture, '') }}"
+    radarr_download_url: >-
+      https://radarr.servarr.com/v1/update/master/updatefile?os=linux&runtime=netcore&arch={{ radarr_arch }}
+    radarr_archive: /var/tmp/radarr.tar.gz
+    radarr_service_file: /etc/systemd/system/radarr.service
+
+  pre_tasks:
+    - name: Require a Debian-based Radarr host
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.os_family == 'Debian'
+        fail_msg: This playbook installs Radarr using Debian packages and a Linux tarball.
+
+    - name: Require a supported CPU architecture
+      ansible.builtin.assert:
+        that:
+          - radarr_arch | length > 0
+        fail_msg: "Unsupported architecture: {{ ansible_facts.architecture }}"
+
+  tasks:
+    - name: Install Radarr prerequisites
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - libicu-dev
+          - libsqlite3-0
+          - sqlite3
+          - tar
+        state: present
+        update_cache: true
+
+    - name: Create the shared media group
+      ansible.builtin.group:
+        name: "{{ radarr_group }}"
+        state: present
+
+    - name: Create the Radarr system user
+      ansible.builtin.user:
+        name: "{{ radarr_user }}"
+        group: "{{ radarr_group }}"
+        system: true
+        create_home: false
+        shell: /usr/sbin/nologin
+        state: present
+
+    - name: Create the Radarr data directory
+      ansible.builtin.file:
+        path: "{{ radarr_data_dir }}"
+        state: directory
+        owner: "{{ radarr_user }}"
+        group: "{{ radarr_group }}"
+        mode: '0775'
+
+    - name: Check whether Radarr is already installed
+      ansible.builtin.stat:
+        path: "{{ radarr_install_dir }}/Radarr"
+      register: radarr_binary
+
+    - name: Download the stable Radarr archive
+      ansible.builtin.get_url:
+        url: "{{ radarr_download_url }}"
+        dest: "{{ radarr_archive }}"
+        mode: '0644'
+        force: false
+      when: not radarr_binary.stat.exists
+
+    - name: Extract Radarr
+      ansible.builtin.unarchive:
+        src: "{{ radarr_archive }}"
+        dest: /opt
+        remote_src: true
+        creates: "{{ radarr_install_dir }}/Radarr"
+      notify: Restart Radarr
+
+    - name: Set ownership of Radarr files
+      ansible.builtin.file:
+        path: "{{ radarr_install_dir }}"
+        state: directory
+        owner: "{{ radarr_user }}"
+        group: "{{ radarr_group }}"
+        recurse: true
+
+    - name: Create the Radarr systemd service
+      ansible.builtin.copy:
+        dest: "{{ radarr_service_file }}"
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=Radarr Daemon
+          After=network.target
+
+          [Service]
+          User={{ radarr_user }}
+          Group={{ radarr_group }}
+          UMask=0002
+          Type=simple
+          ExecStart={{ radarr_install_dir }}/Radarr -nobrowser -data={{ radarr_data_dir }}
+          TimeoutStopSec=20
+          KillMode=process
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+      register: radarr_service
+
+    - name: Reload systemd when the Radarr service changes
+      ansible.builtin.systemd:
+        daemon_reload: true
+      when: radarr_service.changed
+
+    - name: Enable and start Radarr
+      ansible.builtin.service:
+        name: radarr
+        state: started
+        enabled: true
+
+    - name: Wait for Radarr to listen on port 7878
+      ansible.builtin.wait_for:
+        host: 127.0.0.1
+        port: "{{ radarr_port }}"
+        timeout: 60
+
+  handlers:
+    - name: Restart Radarr
+      ansible.builtin.service:
+        name: radarr
+        state: restarted

@@ -49,6 +49,25 @@ module "jellyfin" {
   dedicated_memory = 4096
   swap             = 1024
   disk_size        = 16
+  mount_points = [
+    {
+      path      = "/mnt/media"
+      volume    = "/mnt/hdd/media"
+      read_only = false
+    },
+    {
+      path      = "/mnt/shared"
+      volume    = "/mnt/hdd/shared"
+      read_only = false
+      shared    = true
+    },
+    {
+      path      = "/mnt/media-2"
+      volume    = "/mnt/hdd/media/media-2"
+      read_only = false
+      shared    = true
+    }
+  ]
 
   unprivileged = true
 

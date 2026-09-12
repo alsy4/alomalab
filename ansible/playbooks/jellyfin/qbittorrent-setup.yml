@@ -1,0 +1,144 @@
+---
+# Install and start headless qBittorrent on the Jellyfin Debian LXC.
+#
+# Run from the repository root:
+#   ansible-playbook -i ansible/inventory/homelab.yml \
+#     ansible/playbooks/jellyfin/qbittorrent-setup.yml
+#
+# qBittorrent's Web UI is exposed on the configured address and port. Use the
+# initial credentials printed by qBittorrent and change the password promptly.
+#
+# The default download directory is local to the LXC because the existing
+# /mnt/media bind mount is read-only. Override qbittorrent_download_dir only
+# after making the target path writable for this service user.
+
+- name: Install and start qBittorrent
+  hosts: jellyfin
+  become: true
+  gather_facts: true
+
+  vars:
+    qbittorrent_user: qbittorrent
+    qbittorrent_group: qbittorrent
+    qbittorrent_data_dir: /var/lib/qbittorrent
+    qbittorrent_download_dir: /mnt/hdd/shared/torrents
+    qbittorrent_webui_address: 0.0.0.0
+    qbittorrent_webui_port: 8080
+    qbittorrent_service_file: /etc/systemd/system/qbittorrent.service
+
+  pre_tasks:
+    - name: Require a Debian-based qBittorrent host
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.os_family == 'Debian'
+        fail_msg: This playbook installs qBittorrent-nox from Debian packages.
+
+  tasks:
+    - name: Install qBittorrent-nox
+      ansible.builtin.apt:
+        name: qbittorrent-nox
+        state: present
+        update_cache: true
+
+    - name: Create the qBittorrent system group
+      ansible.builtin.group:
+        name: "{{ qbittorrent_group }}"
+        system: true
+        state: present
+
+    - name: Create the qBittorrent system user
+      ansible.builtin.user:
+        name: "{{ qbittorrent_user }}"
+        group: "{{ qbittorrent_group }}"
+        home: "{{ qbittorrent_data_dir }}"
+        system: true
+        create_home: false
+        shell: /usr/sbin/nologin
+        state: present
+
+    - name: Create qBittorrent data and download directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ qbittorrent_user }}"
+        group: "{{ qbittorrent_group }}"
+        mode: '0770'
+      loop:
+        - "{{ qbittorrent_data_dir }}"
+        - "{{ qbittorrent_download_dir }}"
+
+    - name: Create the qBittorrent configuration directory
+      ansible.builtin.file:
+        path: "{{ qbittorrent_data_dir }}/.config/qBittorrent"
+        state: directory
+        owner: "{{ qbittorrent_user }}"
+        group: "{{ qbittorrent_group }}"
+        mode: '0700'
+
+    - name: Seed qBittorrent configuration
+      ansible.builtin.copy:
+        dest: "{{ qbittorrent_data_dir }}/.config/qBittorrent/qBittorrent.conf"
+        force: false
+        owner: "{{ qbittorrent_user }}"
+        group: "{{ qbittorrent_group }}"
+        mode: '0600'
+        content: |
+          [LegalNotice]
+          Accepted=true
+
+          [Preferences]
+          Downloads\SavePath={{ qbittorrent_download_dir }}/
+          WebUI\Address={{ qbittorrent_webui_address }}
+          WebUI\Port={{ qbittorrent_webui_port }}
+
+    - name: Create the qBittorrent systemd service
+      ansible.builtin.copy:
+        dest: "{{ qbittorrent_service_file }}"
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=qBittorrent-nox service
+          Documentation=man:qbittorrent-nox(1)
+          Wants=network-online.target
+          After=network-online.target nss-lookup.target
+
+          [Service]
+          Type=simple
+          User={{ qbittorrent_user }}
+          Group={{ qbittorrent_group }}
+          UMask=0007
+          WorkingDirectory={{ qbittorrent_data_dir }}
+          Environment=HOME={{ qbittorrent_data_dir }}
+          ExecStart=/usr/bin/qbittorrent-nox --confirm-legal-notice --webui-port={{ qbittorrent_webui_port }}
+          Restart=on-failure
+          RestartSec=5s
+          TimeoutStopSec=1800
+
+          [Install]
+          WantedBy=multi-user.target
+      register: qbittorrent_service
+
+    - name: Reload systemd when the qBittorrent service changes
+      ansible.builtin.systemd:
+        daemon_reload: true
+      when: qbittorrent_service.changed
+
+    - name: Enable and start qBittorrent
+      ansible.builtin.service:
+        name: qbittorrent
+        state: started
+        enabled: true
+
+    - name: Wait for the qBittorrent Web UI
+      ansible.builtin.wait_for:
+        host: "{{ qbittorrent_webui_address if qbittorrent_webui_address != '0.0.0.0' else '127.0.0.1' }}"
+        port: "{{ qbittorrent_webui_port }}"
+        timeout: 60
+
+    - name: Show the initial Web UI credentials reminder
+      ansible.builtin.debug:
+        msg: >-
+          qBittorrent is listening on {{ qbittorrent_webui_address }}:
+          {{ qbittorrent_webui_port }}. Check `journalctl -u qbittorrent` for
+          the initial credentials and change the password immediately after
+          logging in.

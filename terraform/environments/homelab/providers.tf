@@ -1,4 +1,5 @@
 provider "proxmox" {
-  api_token = var.proxmox_api_token
-  endpoint  = var.proxmox_endpoint
+  endpoint = var.proxmox_endpoint
+  username = "root@pam"
+  password = var.proxmox_account_password
 }

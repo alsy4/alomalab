@@ -4,9 +4,8 @@ variable "proxmox_endpoint" {
 }
 
 variable "proxmox_api_token" {
-  description = "API_TOKEN"
+  description = "APi token"
   type        = string
-  sensitive   = true
 }
 
 variable "proxmox_node" {
@@ -38,6 +37,13 @@ variable "lxc_datastore" {
 }
 
 variable "root_password" {
-  type      = string
-  sensitive = true
+  description = "Password for the Proxmox root@pam account and provisioned LXC root accounts"
+  type        = string
+  sensitive   = true
+}
+
+variable "proxmox_account_password" {
+  description = "account password"
+  type        = string
+  sensitive   = true
 }
