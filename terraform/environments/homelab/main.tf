@@ -26,6 +26,15 @@ module "nas" {
   ssh_public_keys = [
     var.ssh_public_key
   ]
+
+  mount_points = [
+    {
+      path      = "/mnt/shared"
+      volume    = "/mnt/hdd/shared"
+      read_only = false
+      shared    = true
+    }
+  ]
   root_password = var.root_password
 }
 

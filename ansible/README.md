@@ -1,5 +1,46 @@
 # Ansible
 
+## Samba
+
+`playbooks/nas/samba-setup.yml` installs Samba on the `nas` host, uses the
+existing `/mnt/shared` directory as the default authenticated share, and configures a Samba user. Supply
+the password at runtime (or store it encrypted with Ansible Vault):
+
+```bash
+ansible-playbook -i ansible/inventory/homelab.yml \
+  ansible/playbooks/nas/samba-setup.yml \
+  --extra-vars 'samba_username=alice samba_password=change-me'
+```
+
+Add further shares by overriding `samba_shares`, for example in a Vault or vars
+file:
+
+```yaml
+samba_shares:
+  - name: share
+    path: /mnt/shared
+  - name: media
+    path: /mnt/media
+    comment: Media library
+    read_only: true
+```
+
+Every configured share is limited to `samba_username`; its backing directory is
+created with group-writable permissions for that account. Do not put a real
+password directly in a committed variables file.
+
+To remove Samba while preserving `/mnt/shared` and every uploaded file, run:
+
+```bash
+ansible-playbook -i ansible/inventory/homelab.yml \
+  ansible/playbooks/nas/samba-teardown.yml \
+  --extra-vars 'samba_username=alice'
+```
+
+This removes Samba, its configuration, and its dedicated account, but does not
+delete any share directory or data. Reinstall by rerunning `nas/samba-setup.yml`
+with the desired username and password.
+
 ## Jellyfin and reverse proxy
 
 `playbooks/setup-jellyfin.yml` uses the `jellyfin` and `reverse_proxy` host
