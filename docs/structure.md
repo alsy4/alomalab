@@ -1,62 +1,56 @@
-# 1. Structure Overview
+# Repository structure
 
-The propose modular structure would look like this:
-homelab/
-│
-├── terraform/                 Infrastructure provisioning
-│   ├── modules/               Reusable infrastructure building blocks
-│   │   ├── proxmox-vm/        Generic Proxmox VM definition
-│   │   └── proxmox-lxc/       Generic Proxmox LXC definition
-│   │
-│   └── environments/          Concrete deployments of those modules
-│       └── homelab/           Your actual home Proxmox environment
-│
-├── ansible/                   OS and service configuration
-│   ├── inventory/             Machines Ansible manages
-│   ├── playbooks/             High-level configuration workflows
-│   └── roles/                 Reusable Ansible components
-│
-├── kubernetes/                Desired state of workloads running in k3s
-│   ├── apps/                  Applications
-│   ├── infrastructure/        Cluster-level supporting services
-│   └── namespaces/            Namespace definitions/policies
-│
-├── nix/                       Declarative Nix/NixOS machine configuration
-│   └── hosts/                 Per-machine Nix configuration
-│
-└── secrets/                   Secret-handling documentation/configurationd
-
-# 2. Provisioning Debian LXC for Jellyfin
-Steps:
-1. Modules
-2. variables
-3. Environments
-4. tfvars
-
-```terraform
-tf init
-tf apply
-tf state
-tf destroy
+```text
+.
+├── .codex/                                      # Codex agent configuration
+│   ├── AGENTS.md                                # Repository instructions for Codex
+│   ├── config.toml                              # Enables configured agents
+│   └── agents/
+│       └── documentation.toml                   # Documentation-agent definition and scope
+├── .github/
+│   └── workflows/
+│       └── documentation-agent.yml              # Documentation-update automation on main
+├── ansible/                                     # Service and host configuration
+│   ├── README.md                                # Playbook commands and operating notes
+│   ├── inventory/
+│   │   └── homelab.yml                          # Managed hosts and address mapping
+│   └── playbooks/
+│       ├── jellyfin/
+│       │   ├── qbittorrent-setup.yml            # Installs and starts qBittorrent-nox
+│       │   ├── radarr-setup.yml                 # Installs and starts Radarr
+│       │   ├── setup-jellyfin.yml               # Configures Jellyfin and its Caddy proxy route
+│       │   ├── setup-mount-points.yml           # Configures Jellyfin LXC bind mounts in Proxmox
+│       │   └── update-debian.yml                # Updates Debian LXC packages
+│       └── nas/
+│           ├── samba-setup.yml                  # Configures NAS Samba shares
+│           └── samba-teardown.yml               # Removes Samba while retaining share data
+├── docs/                                        # Repository documentation
+│   ├── architecture.md                           # Confirmed homelab topology and dependencies
+│   ├── LOGS.md                                  # Chronological implementation log
+│   └── structure.md                              # This guide
+├── terraform/                                   # Proxmox infrastructure definitions
+│   ├── .terraform.lock.hcl                      # Locked provider selections
+│   ├── versions.tf                              # Root Terraform and provider requirements
+│   ├── environments/
+│   │   └── homelab/
+│   │       ├── .terraform.lock.hcl              # Environment provider lock file
+│   │       ├── main.tf                          # NAS and Jellyfin LXC declarations
+│   │       ├── providers.tf                     # Proxmox provider configuration
+│   │       ├── variables.tf                     # Environment inputs and credentials
+│   │       └── versions.tf                      # Environment Terraform requirements
+│   └── modules/
+│       └── pve-lxc/
+│           ├── main.tf                          # Reusable Debian LXC resource
+│           ├── output.tf                        # LXC ID, hostname, and node outputs
+│           ├── variables.tf                     # LXC resource inputs, including bind mounts
+│           └── versions.tf                      # Module Terraform requirements
+└── .gitignore                                   # Excludes local Terraform artifacts
 ```
 
-1. Create mountpoints
-2. Attach it to containers
-```bash
-pct set <VM-ID> -mp0 /mnt/hdd/shared,mp=/mnt/shared
-pct set <VM-ID> -mp0 /mnt/hdd/media,mp=/mnt/media
-```
-
-## Remove accidentally committed file
-1. git filter-repo
-2. rebase
-
-## Ansible
-1. create inventory
-   1. Store host
-2. scripts
-   1. Update packages
-   2. setup jellyfin
-   3. setup mount points
-
-# 3. Create NAS
+`terraform/` provisions the LXC infrastructure and `ansible/` configures hosts
+and services after provisioning. `.github/` contains GitHub Actions automation,
+while `.codex/` constrains the repository-local documentation agent. The
+workflow creates a documentation pull request with the
+`DOCUMENTATION_PR_TOKEN` repository secret when it has documentation changes to
+publish. Generated Terraform working directories, state, variable files, and
+backup state files are excluded by `.gitignore`.
