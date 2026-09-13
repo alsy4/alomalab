@@ -26,6 +26,24 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Archify skill for Codex
+        shell: bash
+        run: |
+          npx -y skills add tt-a1i/archify \
+            --skill archify \
+            --agent codex \
+            --copy \
+            --yes
+
+      - name: Verify Archify
+        shell: bash
+        run: node .agents/skills/archify/bin/archify.mjs doctor
+
       - name: Collect committed files
         id: committed_files
         shell: bash
