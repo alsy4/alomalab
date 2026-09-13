@@ -305,9 +305,19 @@ jobs:
       - name: Open documentation pull request
         if: steps.documentation_changes.outputs.changed == 'true'
         env:
-          GH_TOKEN: ${{ github.token }}
+          # The repository setting "Allow GitHub Actions to create and approve
+          # pull requests" can prohibit the built-in GITHUB_TOKEN from calling
+          # createPullRequest even when pull-requests: write is declared above.
+          # Use a dedicated fine-grained PAT instead. It needs Contents: Read and
+          # write plus Pull requests: Read and write for this repository.
+          GH_TOKEN: ${{ secrets.DOCUMENTATION_PR_TOKEN }}
         shell: bash
         run: |
+          if [[ -z "$GH_TOKEN" ]]; then
+            echo "Missing DOCUMENTATION_PR_TOKEN repository secret."
+            exit 1
+          fi
+
           gh pr create \
             --base "${{ github.event.repository.default_branch }}" \
             --head "$DOCUMENTATION_BRANCH" \
