@@ -1,5 +1,14 @@
 # Implementation log
 
+[2026-09-13 08:40 UTC] - Repaired Archify setup in the documentation workflow
+
+Commit `222a1f6` changes the Archify installation step to run from the GitHub
+Actions runner's temporary directory and install the skill globally. The
+verification step now invokes the installed executable at
+`$HOME/.agents/skills/archify/bin/archify.mjs`. This prevents the workflow from
+looking for a repository-local skill directory after installing the global
+copy.
+
 [2026-09-13 07:15 UTC] - Added Syncthing provisioning for Debian LXC hosts
 
 Commit `b34cf31` added `ansible/playbooks/nas/setup-syncthing.yml`. The

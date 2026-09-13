@@ -49,12 +49,17 @@ The Jellyfin playbook adds a Caddy site on Piloma for
 ## Documentation automation
 
 GitHub Actions runs the repository-local Codex documentation agent for
-qualifying pushes to `main` and for manual dispatch. When documentation changes
-are ready to publish, the workflow uses the `DOCUMENTATION_PR_TOKEN` repository
-secret to authenticate `gh pr create`. The workflow verifies that the secret is
-present before attempting to create the pull request.
+qualifying pushes to `main` and for manual dispatch. Before the agent runs, the
+workflow installs Archify globally from the runner's temporary directory and
+verifies its executable at `$HOME/.agents/skills/archify`. When documentation
+changes are ready to publish, the workflow uses the `DOCUMENTATION_PR_TOKEN`
+repository secret to authenticate `gh pr create`. The workflow verifies that
+the secret is present before attempting to create the pull request.
 
 ## Diagram
 
-No architecture diagram is included. The required Archify skill is unavailable
-in this environment, so no replacement diagram was created.
+No standalone architecture diagram is committed. Archify is available to the
+documentation workflow, but its output is a standalone HTML artifact and this
+workflow permits documentation changes only to the four Markdown files. Adding
+or updating that artifact requires a permitted repository destination; no
+replacement diagram was created in this run.

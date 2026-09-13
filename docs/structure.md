@@ -9,7 +9,7 @@
 │       └── documentation.toml                   # Documentation-agent definition and scope
 ├── .github/
 │   └── workflows/
-│       └── documentation-agent.yml              # Documentation-update automation on main
+│       └── documentation-agent.yml              # Documentation automation; installs and verifies Archify on main
 ├── ansible/                                     # Service and host configuration
 │   ├── README.md                                # Playbook commands and operating notes
 │   ├── inventory/
@@ -53,5 +53,7 @@ and services after provisioning. `.github/` contains GitHub Actions automation,
 while `.codex/` constrains the repository-local documentation agent. The
 workflow creates a documentation pull request with the
 `DOCUMENTATION_PR_TOKEN` repository secret when it has documentation changes to
-publish. Generated Terraform working directories, state, variable files, and
-backup state files are excluded by `.gitignore`.
+publish. Before the agent runs, it installs Archify globally from the GitHub
+Actions runner's temporary directory and verifies the installed copy under the
+runner's home directory. Generated Terraform working directories, state,
+variable files, and backup state files are excluded by `.gitignore`.
