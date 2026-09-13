@@ -17,6 +17,7 @@ You may modify only:
 - docs/structure.md
 - docs/architecture.md
 - docs/LOGS.md
+- files under docs/architecture-diagram/
 
 Never modify source code, tests, infrastructure definitions, dependencies,
 configuration, or CI workflows.
@@ -24,6 +25,10 @@ configuration, or CI workflows.
 Use the Archify skill for architecture diagrams. Read its complete instructions
 before using it. If Archify is unavailable, report the blocker and do not
 substitute another diagramming tool.
+
+Store the Archify JSON source, delivered HTML, and any validation or browser-
+evidence sidecars only under docs/architecture-diagram/. Link the delivered
+HTML artifact from docs/architecture.md when one exists.
 
 Maintain docs/LOGS.md using this heading format:
 

@@ -79,7 +79,7 @@ jobs:
           non_documentation_files="$(
             printf '%s\n' "$changed_paths" |
               grep -Ev \
-                '^(README\.md|docs/structure\.md|docs/architecture\.md|docs/LOGS\.md)$' \
+                '^(README\.md|docs/structure\.md|docs/architecture\.md|docs/LOGS\.md|docs/architecture-diagram(/.*)?)$' \
               || true
           )"
 
@@ -112,6 +112,7 @@ jobs:
           - `docs/structure.md`
           - `docs/architecture.md`
           - `docs/LOGS.md`
+          - Files under `docs/architecture-diagram/`
 
           You may inspect committed source files to understand the implementation,
           but you must not modify them.
@@ -162,6 +163,10 @@ jobs:
           - Preserve useful existing architectural information.
 
           Read the complete Archify skill instructions before diagram work.
+
+          Store the Archify JSON source, delivered HTML, and any validation or
+          browser-evidence sidecars only under `docs/architecture-diagram/`.
+          Link the delivered HTML artifact from this document when one exists.
 
           If Archify is unavailable:
 
@@ -264,7 +269,7 @@ jobs:
             git status --short |
               awk '{print $NF}' |
               grep -Ev \
-                '^(README\.md|docs/structure\.md|docs/architecture\.md|docs/LOGS\.md)$' \
+                '^(README\.md|docs/structure\.md|docs/architecture\.md|docs/LOGS\.md|docs/architecture-diagram(/.*)?)$' \
               || true
           )"
 
@@ -279,12 +284,12 @@ jobs:
         id: documentation_changes
         shell: bash
         run: |
-          if git diff --quiet -- \
+          if [[ -z "$(git status --porcelain -- \
             README.md \
             docs/structure.md \
             docs/architecture.md \
-            docs/LOGS.md
-          then
+            docs/LOGS.md \
+            docs/architecture-diagram/)" ]]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -307,6 +312,10 @@ jobs:
             docs/structure.md \
             docs/architecture.md \
             docs/LOGS.md
+
+          if [[ -d docs/architecture-diagram ]]; then
+            git add -- docs/architecture-diagram
+          fi
 
           git commit \
             -m "docs: automated update for ${GITHUB_SHA::12}"
