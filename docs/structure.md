@@ -23,7 +23,8 @@
 │       │   └── update-debian.yml                # Updates Debian LXC packages
 │       └── nas/
 │           ├── samba-setup.yml                  # Configures NAS Samba shares
-│           └── samba-teardown.yml               # Removes Samba while retaining share data
+│           ├── samba-teardown.yml               # Removes Samba while retaining share data
+│           └── setup-syncthing.yml              # Installs Syncthing on both Debian LXC hosts
 ├── docs/                                        # Repository documentation
 │   ├── architecture.md                           # Confirmed homelab topology and dependencies
 │   ├── LOGS.md                                  # Chronological implementation log

@@ -9,6 +9,8 @@ Jellyfin inside the home network.
 
 - A NAS container with an authenticated Samba share.
 - A Jellyfin container, with optional qBittorrent and Radarr setup playbooks.
+- Syncthing service provisioning on the NAS and Jellyfin containers; devices and
+  shared folders are paired and configured after provisioning.
 - A Caddy reverse-proxy configuration for `jellyfin.alomalab.internal`.
 - A repository-local Codex documentation agent that GitHub Actions runs for
   qualifying changes pushed to `main`.

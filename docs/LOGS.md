@@ -1,5 +1,15 @@
 # Implementation log
 
+[2026-09-13 07:15 UTC] - Added Syncthing provisioning for Debian LXC hosts
+
+Commit `b34cf31` added `ansible/playbooks/nas/setup-syncthing.yml`. The
+playbook installs Syncthing on every host in the `debian_lxc` inventory group,
+creates the `syncthing` system account and service home at
+`/var/lib/syncthing`, enables `syncthing@syncthing.service`, and checks its local
+administration interface on port `8384`. Device pairing and folder selection
+remain an operational step after provisioning because the playbook does not
+store device IDs or folder paths.
+
 [2026-09-13 05:42 UTC] - Configured documentation pull-request authentication
 
 Commit `c400e45` changed the documentation workflow to use the

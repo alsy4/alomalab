@@ -9,8 +9,8 @@ the containers static addresses on `vmbr0`:
 | Component | Declared address / ID | Confirmed role |
 | --- | --- | --- |
 | Proxmox node | `192.168.0.20` | Hosts the Terraform-managed LXC containers. |
-| NAS LXC | VMID `102`, `192.168.0.102` | Samba file-share host. `/mnt/hdd/shared` is mounted at `/mnt/shared`. |
-| Jellyfin LXC | VMID `103`, `192.168.0.103` | Media-service host with host-backed media and shared bind mounts. |
+| NAS LXC | VMID `102`, `192.168.0.102` | Samba file-share host and Syncthing service target. `/mnt/hdd/shared` is mounted at `/mnt/shared`. |
+| Jellyfin LXC | VMID `103`, `192.168.0.103` | Media-service host and Syncthing service target, with host-backed media and shared bind mounts. |
 | Piloma | `192.168.0.14` | Existing reverse-proxy host in Ansible's `reverse_proxy` group. |
 
 The LXC module uses the `bpg/proxmox` provider, a Debian template supplied by
@@ -20,7 +20,12 @@ or the current runtime state of these hosts.
 
 Ansible configures Samba on the NAS container. On the Jellyfin container it can
 install Jellyfin (port `8096`), qBittorrent-nox (web UI port `8080`), and
-Radarr (port `7878`). The Jellyfin playbook adds a Caddy site on Piloma for
+Radarr (port `7878`). Its Syncthing playbook installs a separate service
+instance on each Debian LXC as the `syncthing` system user, creates its service
+home at `/var/lib/syncthing`, enables `syncthing@syncthing.service`, and waits
+for the local administration interface on port `8384`. The playbook does not
+declare device IDs, shared folders, or a completed synchronization relationship.
+The Jellyfin playbook adds a Caddy site on Piloma for
 `jellyfin.alomalab.internal` and proxies it to `192.168.0.103:8096` with
 `tls internal`.
 
@@ -36,6 +41,10 @@ Radarr (port `7878`). The Jellyfin playbook adds a Caddy site on Piloma for
    repository does not configure either one.
 4. The NAS and Jellyfin containers consume host-backed bind mounts declared in
    Terraform. Samba exposes `/mnt/shared` through an authenticated share.
+5. The Syncthing playbook manages an instance on each Debian LXC. Pairing those
+   instances and selecting folders through the Syncthing UI or API are required
+   before they exchange files; neither relationship is configured in this
+   repository.
 
 ## Documentation automation
 
