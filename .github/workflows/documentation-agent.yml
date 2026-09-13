@@ -33,16 +33,18 @@ jobs:
 
       - name: Install Archify skill for Codex
         shell: bash
+        working-directory: ${{ runner.temp }}
         run: |
           npx -y skills add tt-a1i/archify \
             --skill archify \
             --agent codex \
+            --global \
             --copy \
             --yes
 
       - name: Verify Archify
         shell: bash
-        run: node .agents/skills/archify/bin/archify.mjs doctor
+        run: node "$HOME/.agents/skills/archify/bin/archify.mjs" doctor
 
       - name: Collect committed files
         id: committed_files
