@@ -1,0 +1,175 @@
+---
+# Installs and configures Samba on the `nas` inventory host.
+#
+# Run from the repository root, supplying the account password without putting
+# it in this repository:
+#   ansible-playbook -i ansible/inventory/homelab.yml \
+#     ansible/playbooks/nas/samba-setup.yml \
+#     --extra-vars 'samba_username=alice samba_password=change-me'
+#
+# For a persistent secret, put `samba_password` in an Ansible Vault file and
+# pass it with `--extra-vars @path/to/vault.yml --ask-vault-pass`.
+
+- name: Install and configure Samba shares
+  hosts: nas
+  become: true
+  gather_facts: true
+
+  vars:
+    samba_username: samba
+    samba_password: ""
+    samba_group: sambashare
+    samba_shares:
+      - name: share
+        path: /mnt/shared
+        comment: Shared files
+        browsable: true
+        read_only: false
+        guest_ok: false
+
+  pre_tasks:
+    - name: Require a Debian-based Samba host
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.os_family == 'Debian'
+          - samba_username | length > 0
+          - samba_password | length > 0
+          - samba_shares | length > 0
+          - samba_shares | map(attribute='name') | list | unique | length == samba_shares | length
+        fail_msg: >-
+          Set a non-empty samba_username and samba_password, and provide at
+          least one Samba share with a unique name.
+
+  tasks:
+    - name: Install Samba
+      ansible.builtin.apt:
+        name: samba
+        state: present
+        update_cache: true
+
+    - name: Create the Samba group
+      ansible.builtin.group:
+        name: "{{ samba_group }}"
+        state: present
+
+    - name: Create the Samba user
+      ansible.builtin.user:
+        name: "{{ samba_username }}"
+        group: "{{ samba_group }}"
+        groups: "{{ samba_group }}"
+        append: true
+        shell: /usr/sbin/nologin
+        create_home: false
+        state: present
+
+    - name: Create the share directories
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        owner: "{{ samba_username }}"
+        group: "{{ samba_group }}"
+        mode: '2770'
+      loop: "{{ samba_shares }}"
+      loop_control:
+        label: "{{ item.name }} -> {{ item.path }}"
+
+    - name: Check whether the Samba user already exists
+      ansible.builtin.command:
+        argv:
+          - pdbedit
+          - -L
+          - -u
+          - "{{ samba_username }}"
+      changed_when: false
+      failed_when: false
+      register: samba_user_status
+
+    - name: Create the Samba user
+      ansible.builtin.command:
+        argv:
+          - smbpasswd
+          - -a
+          - -s
+          - "{{ samba_username }}"
+        stdin: "{{ samba_password }}\n{{ samba_password }}"
+      when: samba_user_status.rc != 0
+      no_log: true
+
+    - name: Update the Samba user password
+      ansible.builtin.command:
+        argv:
+          - smbpasswd
+          - -s
+          - "{{ samba_username }}"
+        stdin: "{{ samba_password }}\n{{ samba_password }}"
+      when: samba_user_status.rc == 0
+      no_log: true
+
+    - name: Enable the Samba user
+      ansible.builtin.command:
+        argv:
+          - smbpasswd
+          - -e
+          - "{{ samba_username }}"
+      changed_when: false
+
+    - name: Configure Samba
+      ansible.builtin.copy:
+        dest: /etc/samba/smb.conf
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          [global]
+             workgroup = WORKGROUP
+             server role = standalone server
+             security = user
+             map to guest = never
+             min protocol = SMB2
+             include = /etc/samba/smb.conf.ansible-shares
+      notify: Validate and reload Samba
+
+    - name: Configure Samba shares
+      ansible.builtin.copy:
+        dest: /etc/samba/smb.conf.ansible-shares
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          {% for share in samba_shares %}
+          [{{ share.name }}]
+             path = {{ share.path }}
+             comment = {{ share.comment | default(share.name) }}
+             browseable = {{ share.browsable | default(true) | ternary('yes', 'no') }}
+             read only = {{ share.read_only | default(false) | ternary('yes', 'no') }}
+             guest ok = {{ share.guest_ok | default(false) | ternary('yes', 'no') }}
+             valid users = {{ samba_username }}
+             force group = {{ samba_group }}
+             create mask = 0660
+             directory mask = 2770
+
+          {% endfor %}
+      notify: Validate and reload Samba
+
+    - name: Enable and start Samba services
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        - smbd
+        - nmbd
+
+  handlers:
+    - name: Validate and reload Samba
+      ansible.builtin.command:
+        argv:
+          - testparm
+          - -s
+      changed_when: false
+      notify: Reload Samba
+
+    - name: Reload Samba
+      ansible.builtin.service:
+        name: smbd
+        state: reloaded

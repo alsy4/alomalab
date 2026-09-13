@@ -1,0 +1,50 @@
+---
+# Removes the Samba service and its configuration from the `nas` inventory host.
+# Share data in /mnt/shared (and any other supplied samba_shares paths) is kept.
+#
+# Run from the repository root:
+#   ansible-playbook -i ansible/inventory/homelab.yml \
+#     ansible/playbooks/nas/samba-teardown.yml \
+#     --extra-vars 'samba_username=alice'
+
+- name: Remove Samba without deleting share data
+  hosts: nas
+  become: true
+  gather_facts: false
+
+  vars:
+    samba_username: samba
+    samba_group: sambashare
+
+  tasks:
+    - name: Stop and disable Samba services
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: false
+      loop:
+        - smbd
+        - nmbd
+      failed_when: false
+
+    - name: Purge Samba packages and configuration
+      ansible.builtin.apt:
+        name:
+          - samba
+          - samba-common
+          - samba-common-bin
+        state: absent
+        purge: true
+        autoremove: true
+
+    - name: Remove the Samba-only Linux user
+      ansible.builtin.user:
+        name: "{{ samba_username }}"
+        state: absent
+        remove: false
+
+    - name: Remove the Samba group when no longer used
+      ansible.builtin.group:
+        name: "{{ samba_group }}"
+        state: absent
+      failed_when: false
