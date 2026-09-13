@@ -1,0 +1,74 @@
+---
+# Installs Syncthing on both the `nas` and `jellyfin` inventory hosts.
+#
+# Run from the repository root:
+#   ansible-playbook -i ansible/inventory/homelab.yml \
+#     ansible/playbooks/syncthing/setup-syncthing.yml
+#
+# The playbook installs and starts a separate Syncthing instance on each host.
+# Pair the two instances and configure folders through the Syncthing UI/API after
+# the first run; device IDs and folder paths are intentionally not hard-coded.
+
+- name: Install and start Syncthing
+  hosts: debian_lxc
+  become: true
+  gather_facts: true
+
+  vars:
+    syncthing_user: syncthing
+    syncthing_group: syncthing
+    syncthing_home: /var/lib/syncthing
+
+  pre_tasks:
+    - name: Require a Debian-based Syncthing host
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.os_family == 'Debian'
+          - syncthing_user | length > 0
+          - syncthing_group | length > 0
+          - syncthing_home | length > 0
+        fail_msg: >-
+          This playbook supports Debian-based hosts and requires non-empty
+          syncthing_user, syncthing_group, and syncthing_home variables.
+
+  tasks:
+    - name: Install Syncthing
+      ansible.builtin.apt:
+        name: syncthing
+        state: present
+        update_cache: true
+
+    - name: Create the Syncthing group
+      ansible.builtin.group:
+        name: "{{ syncthing_group }}"
+        state: present
+
+    - name: Create the Syncthing service account
+      ansible.builtin.user:
+        name: "{{ syncthing_user }}"
+        group: "{{ syncthing_group }}"
+        home: "{{ syncthing_home }}"
+        create_home: true
+        system: true
+        shell: /usr/sbin/nologin
+        state: present
+
+    - name: Ensure the Syncthing data directory has safe ownership
+      ansible.builtin.file:
+        path: "{{ syncthing_home }}"
+        state: directory
+        owner: "{{ syncthing_user }}"
+        group: "{{ syncthing_group }}"
+        mode: '0750'
+
+    - name: Enable and start Syncthing for the service account
+      ansible.builtin.systemd:
+        name: "syncthing@{{ syncthing_user }}.service"
+        state: started
+        enabled: true
+
+    - name: Wait for Syncthing's local administration interface
+      ansible.builtin.wait_for:
+        host: 127.0.0.1
+        port: 8384
+        timeout: 60
