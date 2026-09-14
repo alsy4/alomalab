@@ -56,5 +56,7 @@ present before attempting to create the pull request.
 
 ## Diagram
 
-No architecture diagram is included. The required Archify skill is unavailable
-in this environment, so no replacement diagram was created.
+The [Archify source](architecture-diagram/alomalab-homelab.architecture.json)
+captures the confirmed topology above. This workspace cannot yet deliver its
+HTML artifact: the Archify renderer is blocked from starting a child Node.js
+process by the sandbox. No substitute diagram format has been added.
