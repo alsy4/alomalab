@@ -52,11 +52,15 @@ GitHub Actions runs the repository-local Codex documentation agent for
 qualifying pushes to `main` and for manual dispatch. When documentation changes
 are ready to publish, the workflow uses the `DOCUMENTATION_PR_TOKEN` repository
 secret to authenticate `gh pr create`. The workflow verifies that the secret is
-present before attempting to create the pull request.
+present before attempting to create the pull request. It then delivers the
+repository's Archify architecture source as
+`docs/architecture-diagram/alomalab-homelab.architecture.html`; the delivered
+artifact is included with the documentation changes when rendering succeeds.
 
 ## Diagram
 
 The [Archify source](architecture-diagram/alomalab-homelab.architecture.json)
-captures the confirmed topology above. This workspace cannot yet deliver its
-HTML artifact: the Archify renderer is blocked from starting a child Node.js
-process by the sandbox. No substitute diagram format has been added.
+captures the confirmed topology above. The workflow is configured to generate
+the HTML artifact. This workspace could not render it because its sandbox
+blocks Archify from starting its child Node.js renderer; no substitute diagram
+format has been added.
