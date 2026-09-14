@@ -27,6 +27,8 @@
 │           └── setup-syncthing.yml              # Installs Syncthing on both Debian LXC hosts
 ├── docs/                                        # Repository documentation
 │   ├── architecture.md                           # Confirmed homelab topology and dependencies
+│   ├── architecture-diagram/                     # Archify architecture-diagram source and delivered artifacts
+│   │   └── alomalab-homelab.architecture.json    # Confirmed topology rendered by documentation automation
 │   ├── LOGS.md                                  # Chronological implementation log
 │   └── structure.md                              # This guide
 ├── terraform/                                   # Proxmox infrastructure definitions
@@ -50,8 +52,10 @@
 
 `terraform/` provisions the LXC infrastructure and `ansible/` configures hosts
 and services after provisioning. `.github/` contains GitHub Actions automation,
-while `.codex/` constrains the repository-local documentation agent. The
-workflow creates a documentation pull request with the
+while `.codex/` constrains the repository-local documentation agent. After a
+qualifying documentation-agent run, the workflow renders the Archify source to
+an HTML artifact in `docs/architecture-diagram/`. The workflow creates a
+documentation pull request with the
 `DOCUMENTATION_PR_TOKEN` repository secret when it has documentation changes to
 publish. Generated Terraform working directories, state, variable files, and
 backup state files are excluded by `.gitignore`.
