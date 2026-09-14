@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "AlomaLab homelab",
+    "quality_profile": "showcase",
+    "locale": "en",
+    "viewBox": [1180, 720]
+  },
+  "components": [
+    {
+      "id": "automation",
+      "type": "external",
+      "label": "Terraform and Ansible",
+      "sublabel": "Provisioning and configuration",
+      "pos": [40, 280],
+      "size": [160, 72],
+      "sources": [
+        { "path": "terraform/environments/homelab/main.tf", "label": "Terraform" },
+        { "path": "ansible/inventory/homelab.yml", "label": "Ansible inventory" }
+      ]
+    },
+    {
+      "id": "proxmox",
+      "type": "backend",
+      "label": "Proxmox node",
+      "sublabel": "192.168.0.20 · vmbr0",
+      "pos": [260, 280],
+      "size": [160, 72],
+      "sources": [
+        { "path": "ansible/inventory/homelab.yml", "line": 18, "label": "Inventory" }
+      ]
+    },
+    {
+      "id": "nas",
+      "type": "backend",
+      "label": "NAS LXC",
+      "sublabel": "VMID 102 · Samba · Syncthing",
+      "pos": [510, 190],
+      "size": [180, 72],
+      "sources": [
+        { "path": "terraform/environments/homelab/main.tf", "line": 1, "label": "NAS container" },
+        { "path": "ansible/playbooks/nas/samba-setup.yml", "label": "Samba" }
+      ]
+    },
+    {
+      "id": "jellyfin",
+      "type": "backend",
+      "label": "Jellyfin LXC",
+      "sublabel": "VMID 103 · Jellyfin :8096 · Syncthing",
+      "pos": [510, 390],
+      "size": [180, 72],
+      "sources": [
+        { "path": "terraform/environments/homelab/main.tf", "line": 36, "label": "Jellyfin container" },
+        { "path": "ansible/playbooks/jellyfin/setup-jellyfin.yml", "label": "Jellyfin" }
+      ]
+    },
+    {
+      "id": "storage",
+      "type": "database",
+      "label": "Host-backed storage",
+      "sublabel": "/mnt/hdd shared and media paths",
+      "pos": [760, 310],
+      "size": [190, 72],
+      "sources": [
+        { "path": "terraform/environments/homelab/main.tf", "line": 22, "label": "Bind mounts" }
+      ]
+    },
+    {
+      "id": "piloma",
+      "type": "security",
+      "label": "Piloma",
+      "sublabel": "192.168.0.14 · Caddy",
+      "pos": [760, 120],
+      "size": [160, 72],
+      "sources": [
+        { "path": "ansible/inventory/homelab.yml", "line": 13, "label": "Reverse proxy" },
+        { "path": "ansible/playbooks/jellyfin/setup-jellyfin.yml", "label": "Caddy route" }
+      ]
+    },
+    {
+      "id": "clients",
+      "type": "external",
+      "label": "Home-network clients",
+      "sublabel": "Jellyfin users",
+      "pos": [990, 120],
+      "size": [150, 72]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Proxmox-managed LXC containers",
+      "wraps": ["nas", "jellyfin"],
+      "pad": 38
+    }
+  ],
+  "connections": [
+    {
+      "id": "automation-proxmox",
+      "from": "automation",
+      "to": "proxmox",
+      "label": "Proxmox API and SSH",
+      "variant": "emphasis"
+    },
+    {
+      "id": "proxmox-nas",
+      "from": "proxmox",
+      "to": "nas",
+      "label": "hosts LXC",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "proxmox-jellyfin",
+      "from": "proxmox",
+      "to": "jellyfin",
+      "label": "hosts LXC",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "nas-storage",
+      "from": "nas",
+      "to": "storage",
+      "label": "/mnt/shared bind mount",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "jellyfin-storage",
+      "from": "jellyfin",
+      "to": "storage",
+      "label": "media and shared bind mounts",
+      "fromSide": "right",
+      "toSide": "bottom"
+    },
+    {
+      "id": "piloma-jellyfin",
+      "from": "piloma",
+      "to": "jellyfin",
+      "label": "reverse proxy to :8096",
+      "fromSide": "left",
+      "toSide": "top"
+    },
+    {
+      "id": "clients-piloma",
+      "from": "clients",
+      "to": "piloma",
+      "label": "jellyfin.alomalab.internal · TLS",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "Operational prerequisites",
+      "items": [
+        "DNS for jellyfin.alomalab.internal and trust of Caddy's local CA are configured outside this repository.",
+        "Syncthing is provisioned on both LXC hosts, but device pairing and folders are not declared."
+      ]
+    }
+  ]
+}
