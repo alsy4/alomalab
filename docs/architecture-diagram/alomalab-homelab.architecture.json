@@ -5,6 +5,10 @@
     "title": "AlomaLab homelab",
     "quality_profile": "showcase",
     "locale": "en",
+    "repository": {
+      "url": "https://github.com/alsy4/alomalab",
+      "revision": "d7d7f6a59af6c48b6cb9fcc73d15aa68cb59ba34"
+    },
     "viewBox": [1180, 720]
   },
   "components": [
@@ -101,6 +105,7 @@
       "from": "automation",
       "to": "proxmox",
       "label": "Proxmox API and SSH",
+      "labelAt": [230, 260],
       "variant": "emphasis"
     },
     {
@@ -116,6 +121,7 @@
       "from": "proxmox",
       "to": "jellyfin",
       "label": "hosts LXC",
+      "labelAt": [465, 340],
       "fromSide": "right",
       "toSide": "left"
     },
@@ -141,13 +147,16 @@
       "to": "jellyfin",
       "label": "reverse proxy to :8096",
       "fromSide": "left",
-      "toSide": "top"
+      "toSide": "top",
+      "via": [[20, 156], [20, 370], [600, 370]],
+      "labelAt": [400, 370]
     },
     {
       "id": "clients-piloma",
       "from": "clients",
       "to": "piloma",
       "label": "jellyfin.alomalab.internal · TLS",
+      "labelAt": [955, 206],
       "variant": "emphasis"
     }
   ],

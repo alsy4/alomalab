@@ -255,6 +255,26 @@ jobs:
           safety-strategy: drop-sudo
           output-file: ${{ runner.temp }}/documentation-result.md
 
+      - name: Render architecture diagram
+        if: steps.committed_files.outputs.should_run == 'true'
+        shell: bash
+        run: |
+          source="docs/architecture-diagram/alomalab-homelab.architecture.json"
+          output="docs/architecture-diagram/alomalab-homelab.architecture.html"
+
+          if [[ ! -f "$source" ]]; then
+            echo "No architecture source found; skipping diagram render."
+            exit 0
+          fi
+
+          node "$HOME/.agents/skills/archify/bin/archify.mjs" deliver \
+            architecture \
+            "$source" \
+            "$output" \
+            --quality showcase \
+            --repo-root "$GITHUB_WORKSPACE" \
+            --json
+
       - name: Remove generated prompt
         if: always()
         shell: bash
