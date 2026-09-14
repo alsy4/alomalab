@@ -12,8 +12,6 @@ Jellyfin inside the home network.
 - Syncthing service provisioning on the NAS and Jellyfin containers; devices and
   shared folders are paired and configured after provisioning.
 - A Caddy reverse-proxy configuration for `jellyfin.alomalab.internal`.
-- A repository-local Codex documentation agent that GitHub Actions runs for
-  qualifying changes pushed to `main`.
 
 Terraform uses the `bpg/proxmox` provider to manage Proxmox LXC containers.
 Ansible configures Debian-based hosts and services.
