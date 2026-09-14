@@ -84,3 +84,7 @@ module "jellyfin" {
     var.ssh_public_key
   ]
 }
+
+module "vmbr20" {
+  source = "../../modules/vlan"
+}
