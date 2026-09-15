@@ -5,6 +5,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      publish:
+        description: "Create/Update PR docs"
+        type: boolean
+        required: true
+        default: false
 
 concurrency:
   group: documentation-agent
@@ -316,7 +322,10 @@ jobs:
           fi
 
       - name: Commit documentation changes
-        if: steps.documentation_changes.outputs.changed == 'true'
+        if: >-
+          steps.documentation_changes.outputs.changed == 'true' &&
+          github.ref == format('refs/heads/{0}', github.event.repository.default_branch) &&
+          (github.event_name == 'push' || inputs.publish)
         shell: bash
         run: |
           branch="codex/docs-${GITHUB_SHA::12}"
@@ -343,7 +352,10 @@ jobs:
           echo "DOCUMENTATION_BRANCH=$branch" >> "$GITHUB_ENV"
 
       - name: Push documentation branch
-        if: steps.documentation_changes.outputs.changed == 'true'
+        if: >-
+          steps.documentation_changes.outputs.changed == 'true' &&
+          github.ref == format('refs/heads/{0}', github.event.repository.default_branch) &&
+          (github.event_name == 'push' || inputs.publish)
         env:
           DOCUMENTATION_PR_TOKEN: ${{ secrets.DOCUMENTATION_PR_TOKEN }}
         shell: bash
@@ -358,7 +370,10 @@ jobs:
           git push --set-upstream origin "$DOCUMENTATION_BRANCH"
 
       - name: Open documentation pull request
-        if: steps.documentation_changes.outputs.changed == 'true'
+        if: >-
+          steps.documentation_changes.outputs.changed == 'true' &&
+          github.ref == format('refs/heads/{0}', github.event.repository.default_branch) &&
+          (github.event_name == 'push' || inputs.publish)
         env:
           # The repository setting "Allow GitHub Actions to create and approve
           # pull requests" can prohibit the built-in GITHUB_TOKEN from calling
