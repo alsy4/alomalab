@@ -61,6 +61,7 @@ artifact is included with the documentation changes when rendering succeeds.
 
 The [Archify source](architecture-diagram/alomalab-homelab.architecture.json)
 captures the confirmed topology above. The workflow is configured to generate
-the HTML artifact. This workspace could not render it because its sandbox
-blocks Archify from starting its child Node.js renderer; no substitute diagram
-format has been added.
+the HTML artifact. A self-contained [SVG redraw](architecture-diagram/alomalab-homelab.architecture-redraw.svg)
+is also available for direct embedding in documentation and vector editing;
+its [HTML source](architecture-diagram/alomalab-homelab.architecture-redraw.html)
+contains the accompanying operational-prerequisite note.
