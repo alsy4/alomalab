@@ -1,16 +1,16 @@
 variable "name" {
-  type = string
+  type        = string
   description = "VM's name"
 }
 
 variable "proxmox_node" {
-  type = string
+  type        = string
   description = "proxmox node name"
-  default = "proxmox"
+  default     = "proxmox"
 }
 
 variable "description" {
-  type = string
+  type        = string
   description = "What the vm is for?"
 }
 
@@ -23,73 +23,78 @@ variable "vm_id" {
 }
 
 variable "cores" {
-  type = number
+  type        = number
   description = "CPU cores"
 }
 
 variable "type" {
-  type = string
+  type        = string
   description = "CPU types"
-  default = "x86-64-v2-AES"
+  default     = "x86-64-v2-AES"
 }
 
 variable "dedicated_memory" {
-  type = number
+  type        = number
   description = "RAM dedicated memory"
 }
 
 variable "floating_memory" {
-  type = number
+  type        = number
   description = "RAM floating memory, shared across pool"
-  default = 512
+  default     = 512
 }
 
 variable "datastore_id" {
-  type = string
+  type        = string
   description = "id for storage datastore"
-  default = "local-lvm"
+  default     = "local-lvm"
 }
 
 variable "interface" {
-  type = string
+  type        = string
   description = "virtual interface for storage"
-  default = "scsi0"
+  default     = "scsi0"
+}
+
+variable "image_file_id" {
+  type        = string
+  description = "Proxmox file ID of the cloud image to import as the VM disk"
 }
 
 variable "size" {
-  type = number
+  type        = number
   description = "disk size in gb"
 }
 
 variable "bridge" {
-  type = string
+  type        = string
   description = "network bridge"
-  default = "vmbr0"
+  default     = "vmbr0"
 }
 
 variable "model" {
-  type = string
+  type        = string
   description = "network device model"
-  default = "virtio"
+  default     = "virtio"
 }
 
 variable "address" {
-  type = string 
+  type        = string
   description = "ip address (without mask)"
 }
 
 variable "gateway" {
-  type = string
+  type        = string
   description = "default gateway"
 }
 
 variable "username" {
-  type = string
+  type        = string
   description = "account's username"
 }
 
 variable "ssh_public_keys" {
-  type = string
+  type        = string
   description = "SSH public keys"
 }
 
