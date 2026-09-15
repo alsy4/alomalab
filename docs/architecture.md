@@ -11,12 +11,18 @@ the containers static addresses on `vmbr0`:
 | Proxmox node | `192.168.0.20` | Hosts the Terraform-managed LXC containers. |
 | NAS LXC | VMID `102`, `192.168.0.102` | Samba file-share host and Syncthing service target. `/mnt/hdd/shared` is mounted at `/mnt/shared`. |
 | Jellyfin LXC | VMID `103`, `192.168.0.103` | Media-service host and Syncthing service target, with host-backed media and shared bind mounts. |
+| K3s SDN | `k3szone` / `k3svnet`, `192.168.20.0/24` | A Proxmox simple SDN zone, VNet, and subnet, applied through Terraform; `vmbr20` on `proxmox` is addressed as `192.168.20.1/24`. |
+| K3s control-plane VM | VMID `20100`, `192.168.20.100` | Terraform-managed Ubuntu 22.04 VM named `k3s-cp-01`, with two vCPUs, 2 GiB dedicated memory, a 10 GB disk, and a VirtIO NIC on `vmbr20`. |
 | Piloma | `192.168.0.14` | Existing reverse-proxy host in Ansible's `reverse_proxy` group. |
 
 The LXC module uses the `bpg/proxmox` provider, a Debian template supplied by
 `template_file_id`, and `vmbr0` networking. The Terraform configuration does
 not establish the underlying physical network, Proxmox storage, DNS service,
-or the current runtime state of these hosts.
+or the current runtime state of these hosts. The K3s VM module downloads the
+current Ubuntu Jammy cloud image from Ubuntu's cloud-images service, imports it
+into Proxmox's `local` datastore, and attaches it to the VM's disk. Although
+the VM and its network are named for K3s, no Kubernetes/K3s installation,
+cluster membership, service, or workload is declared in this repository.
 
 Ansible configures Samba on the NAS container. On the Jellyfin container it can
 install Jellyfin (port `8096`), qBittorrent-nox (web UI port `8080`), and
@@ -45,6 +51,12 @@ The Jellyfin playbook adds a Caddy site on Piloma for
    instances and selecting folders through the Syncthing UI or API are required
    before they exchange files; neither relationship is configured in this
    repository.
+6. Terraform applies the `k3szone` simple SDN zone, `k3svnet`, and
+   `192.168.20.0/24` subnet, then creates `vmbr20` on the Proxmox node with
+   `192.168.20.1/24`. `k3s-cp-01` depends on that module and receives
+   `192.168.20.100/24` with that bridge address as its gateway. The configuration
+   does not declare an upstream route, DHCP, DNS, firewall policy, or any
+   connectivity from this subnet to `192.168.0.0/24`.
 
 ## Documentation automation
 
