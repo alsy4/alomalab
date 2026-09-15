@@ -85,6 +85,3 @@ module "jellyfin" {
   ]
 }
 
-module "vmbr20" {
-  source = "../../modules/vlan"
-}
