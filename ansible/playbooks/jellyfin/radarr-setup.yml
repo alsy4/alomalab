@@ -5,8 +5,8 @@
 #   ansible-playbook -i ansible/inventory/homelab.yml ansible/playbooks/radarr-setup.yml
 #
 # Radarr needs read/write access to its movie root folder and download-client
-# directory. The current /mnt/media LXC bind mount is read-only, so change that
-# mount before asking Radarr to import, rename, or move media there.
+# directory. Terraform declares /mnt/media as writable, but filesystem
+# ownership and the Radarr media-group permissions still need to allow writes.
 
 - name: Install and start Radarr
   hosts: jellyfin

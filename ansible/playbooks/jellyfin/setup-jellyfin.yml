@@ -3,7 +3,8 @@
 # Caddy on the `piloma` inventory host.
 #
 # Run from the repository root:
-#   ansible-playbook -i ansible/inventory/homelab.yml ansible/playbooks/setup-jellyfin.yml
+#   ansible-playbook -i ansible/inventory/homelab.yml \
+#     ansible/playbooks/jellyfin/setup-jellyfin.yml
 
 - name: Install and start Jellyfin
   hosts: jellyfin

@@ -3,7 +3,7 @@
 #
 # Run from the repository root:
 #   ansible-playbook -i ansible/inventory/homelab.yml \
-#     ansible/playbooks/syncthing/setup-syncthing.yml
+#     ansible/playbooks/nas/setup-syncthing.yml
 #
 # The playbook installs and starts a separate Syncthing instance on each host.
 # Pair the two instances and configure folders through the Syncthing UI/API after

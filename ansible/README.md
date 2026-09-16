@@ -1,10 +1,110 @@
 # Ansible
 
+Run commands from the repository root with
+`-i ansible/inventory/homelab.yml`. The inventory contains the two Debian LXC
+hosts, the Proxmox host, Piloma, and the three Terraform-managed K3s VMs.
+
+## K3s
+
+Install the collection declared in `ansible/requirements.yml`, then run the
+wrapper playbook:
+
+```bash
+ansible-galaxy collection install -r ansible/requirements.yml
+ansible-playbook -i ansible/inventory/homelab.yml \
+  ansible/playbooks/k3s/setup-k3s.yml
+```
+
+The wrapper imports `k3s.orchestration.site`, pins K3s to
+`v1.36.3+k3s1`, and uses the first host in the `server` group as the API
+endpoint. The declared cluster inventory is:
+
+| Group | Host | Address | Provisioning |
+| --- | --- | --- | --- |
+| `server` | `k3s-cp-01` | `192.168.0.200` | Terraform VM |
+| `agent` | `k3s-worker-01` | `192.168.0.201` | Terraform VM |
+| `agent` | `k3s-worker-02` | `192.168.0.202` | Terraform VM |
+
+Piloma (`192.168.0.14`) is not a Kubernetes node. It remains solely in the
+`reverse_proxy` group so Caddy can own the host's HTTP and HTTPS entry points.
+The K3s playbook targets only the three Proxmox VMs listed above.
+
+`playbooks/k3s/update-debian.yml` currently targets a `k3s_nodes` group that is
+not present in the inventory. Ansible therefore warns and selects no hosts.
+Align that playbook with `k3s_cluster` (or add an intentional aggregate group)
+before using it for cluster maintenance.
+
+## Jellyfin and Caddy
+
+`playbooks/jellyfin/setup-jellyfin.yml` installs Jellyfin on
+`jellyfin` (`192.168.0.103`), waits for port `8096`, and adds an Ansible-managed
+site block to Piloma's existing `/etc/caddy/Caddyfile`:
+
+```bash
+ansible-playbook -i ansible/inventory/homelab.yml \
+  ansible/playbooks/jellyfin/setup-jellyfin.yml
+```
+
+Create a DNS record for `jellyfin.alomalab.internal` that points to
+`192.168.0.14`. Caddy uses `tls internal`, so clients must trust its local CA.
+The playbook requires Caddy and its configuration file to exist on Piloma; it
+does not install Caddy or manage DNS.
+
+## Jellyfin bind mounts
+
+Terraform already declares these writable mounts for VMID `103`:
+
+| Proxmox path | Container path |
+| --- | --- |
+| `/mnt/hdd/media` | `/mnt/media` |
+| `/mnt/hdd/shared` | `/mnt/shared` |
+| `/mnt/hdd/media/media-2` | `/mnt/media-2` |
+
+`playbooks/jellyfin/setup-mount-points.yml` is an operational alternative that
+uses `pct` on the Proxmox host, refuses to overwrite a different occupied mount
+slot, and reboots the container when it adds a mount:
+
+```bash
+ansible-playbook -i ansible/inventory/homelab.yml \
+  ansible/playbooks/jellyfin/setup-mount-points.yml
+```
+
+## qBittorrent
+
+`playbooks/jellyfin/qbittorrent-setup.yml` installs `qbittorrent-nox`, creates
+a dedicated systemd service, exposes its Web UI on port `8080`, and currently
+uses `/mnt/hdd/shared/torrents` as its default download directory:
+
+```bash
+ansible-playbook -i ansible/inventory/homelab.yml \
+  ansible/playbooks/jellyfin/qbittorrent-setup.yml
+```
+
+That default is created inside the LXC and is not the Terraform bind-mount
+target (`/mnt/shared`). Override `qbittorrent_download_dir` with an intentional
+writable path if downloads should land on host-backed storage. Check
+`journalctl -u qbittorrent` for the initial credentials and change the password
+immediately.
+
+## Radarr
+
+`playbooks/jellyfin/radarr-setup.yml` downloads the stable Radarr build for the
+host architecture, installs it under `/opt/Radarr`, and starts it on port
+`7878`:
+
+```bash
+ansible-playbook -i ansible/inventory/homelab.yml \
+  ansible/playbooks/jellyfin/radarr-setup.yml
+```
+
+The playbook does not configure a movie root, a qBittorrent integration, or a
+Caddy route. Complete those application-level settings after installation.
+
 ## Samba
 
-`playbooks/nas/samba-setup.yml` installs Samba on the `nas` host, uses the
-existing `/mnt/shared` directory as the default authenticated share, and configures a Samba user. Supply
-the password at runtime (or store it encrypted with Ansible Vault):
+`playbooks/nas/samba-setup.yml` installs Samba on `nas`, exposes
+`/mnt/shared` as an authenticated share by default, and requires the password
+at runtime or through Ansible Vault:
 
 ```bash
 ansible-playbook -i ansible/inventory/homelab.yml \
@@ -12,24 +112,11 @@ ansible-playbook -i ansible/inventory/homelab.yml \
   --extra-vars 'samba_username=alice samba_password=change-me'
 ```
 
-Add further shares by overriding `samba_shares`, for example in a Vault or vars
-file:
+Add shares by overriding `samba_shares`. Every configured share is limited to
+`samba_username`; its directory is created with group-writable permissions for
+that account. Do not commit a real password.
 
-```yaml
-samba_shares:
-  - name: share
-    path: /mnt/shared
-  - name: media
-    path: /mnt/media
-    comment: Media library
-    read_only: true
-```
-
-Every configured share is limited to `samba_username`; its backing directory is
-created with group-writable permissions for that account. Do not put a real
-password directly in a committed variables file.
-
-To remove Samba while preserving `/mnt/shared` and every uploaded file, run:
+To remove Samba while retaining the share directories and their data:
 
 ```bash
 ansible-playbook -i ansible/inventory/homelab.yml \
@@ -37,48 +124,28 @@ ansible-playbook -i ansible/inventory/homelab.yml \
   --extra-vars 'samba_username=alice'
 ```
 
-This removes Samba, its configuration, and its dedicated account, but does not
-delete any share directory or data. Reinstall by rerunning `nas/samba-setup.yml`
-with the desired username and password.
+## Syncthing
 
-## Jellyfin and reverse proxy
-
-`playbooks/setup-jellyfin.yml` uses the `jellyfin` and `reverse_proxy` host
-groups in `inventory/homelab.yml` to:
-
-1. Install and start Jellyfin on `jellyfin` (`192.168.0.103`), listening on its
-   standard port `8096`.
-2. SSH to `piloma` (`192.168.0.14`) and add a Jellyfin reverse-proxy site to its
-   existing `/etc/caddy/Caddyfile`. Caddy supports Jellyfin's WebSocket and
-   streaming connections automatically.
-
-Both hosts must be Debian-based and reachable by SSH with the credentials in the
-inventory. Run it from the repository root:
-
-```bash
-ansible-playbook -i ansible/inventory/homelab.yml ansible/playbooks/setup-jellyfin.yml
-```
-
-Create a DNS record for `jellyfin.alomalab.internal` that points to Piloma's IP,
-`192.168.0.14`. Caddy serves this `.internal` hostname over HTTPS using its
-local CA; clients must trust that CA.
-
-## qBittorrent
-
-`playbooks/qbittorrent-setup.yml` installs the headless Debian
-`qbittorrent-nox` package on the `jellyfin` host and manages it with systemd.
-It listens on port `8080` by default and stores downloads under
-`/var/lib/qbittorrent/downloads`. The existing `/mnt/media` bind mount is
-read-only, so override `qbittorrent_download_dir` only after making another
-target writable for the `qbittorrent` user.
-
-Run it from the repository root:
+`playbooks/nas/setup-syncthing.yml` installs one Syncthing instance on each
+host in `debian_lxc`, runs it as the `syncthing` system user, and waits for the
+local administration interface on port `8384`:
 
 ```bash
 ansible-playbook -i ansible/inventory/homelab.yml \
-  ansible/playbooks/qbittorrent-setup.yml
+  ansible/playbooks/nas/setup-syncthing.yml
 ```
 
-Check `journalctl -u qbittorrent` for the initial Web UI credentials, then
-change the password immediately. The Web UI address and port can be overridden
-with `qbittorrent_webui_address` and `qbittorrent_webui_port`.
+Device IDs, shared folders, and the relationship between the two instances are
+not declared; pair and configure them after provisioning.
+
+## Debian LXC updates
+
+Update both Debian containers with:
+
+```bash
+ansible-playbook -i ansible/inventory/homelab.yml \
+  ansible/playbooks/jellyfin/update-debian.yml
+```
+
+This refreshes APT metadata, performs a distribution upgrade, removes unused
+packages, and cleans the package cache for the `debian_lxc` group.

@@ -8,9 +8,10 @@
 # qBittorrent's Web UI is exposed on the configured address and port. Use the
 # initial credentials printed by qBittorrent and change the password promptly.
 #
-# The default download directory is local to the LXC because the existing
-# /mnt/media bind mount is read-only. Override qbittorrent_download_dir only
-# after making the target path writable for this service user.
+# The default /mnt/hdd/shared/torrents directory is created inside the LXC and
+# is not the Terraform bind-mount target (/mnt/shared). Override
+# qbittorrent_download_dir with an intentional writable path when downloads
+# should use host-backed storage.
 
 - name: Install and start qBittorrent
   hosts: jellyfin
