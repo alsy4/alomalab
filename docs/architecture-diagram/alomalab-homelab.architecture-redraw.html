@@ -4,143 +4,184 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AlomaLab homelab architecture</title>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400&family=Noto+Sans+TC:wght@400;500;600&family=Noto+Serif+TC:wght@400&display=swap" rel="stylesheet">
   <style>
     :root { color-scheme: light; background: #f5f5f5; color: #2d3142; }
     * { box-sizing: border-box; }
-    body { margin: 0; padding: 24px; background: #f5f5f5; font-family: Geist, Arial, sans-serif; }
-    main { max-width: 1180px; margin: 0 auto; }
+    body { margin: 0; padding: 24px; background: #f5f5f5; font-family: Geist, sans-serif; }
+    main { max-width: 1280px; margin: 0 auto; }
     svg { display: block; width: 100%; height: auto; }
-    .notes { margin-top: 20px; padding: 16px 20px; border: 1px solid rgba(45,49,66,.12); border-radius: 6px; background: #fff; }
-    .notes p { margin: 0; color: #4f5d75; font-size: 14px; line-height: 1.5; }
-    .notes strong { color: #2d3142; }
+    .notes { display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; margin-top: 20px; }
+    .note { padding: 16px 20px; border: 1px solid rgba(45,49,66,.12); border-radius: 6px; background: #fff; }
+    .note h2 { margin: 0 0 6px; color: #2d3142; font-size: 14px; font-weight: 600; }
+    .note p { margin: 0; color: #4f5d75; font-size: 13px; line-height: 1.5; }
+    code { font-family: "Geist Mono", monospace; font-size: .92em; }
+    @media (max-width: 720px) { body { padding: 12px; } .notes { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <main>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 720" role="img" aria-labelledby="alomalab-homelab-title alomalab-homelab-desc">
-      <title id="alomalab-homelab-title">AlomaLab homelab architecture</title>
-      <desc id="alomalab-homelab-desc">Terraform and Ansible manage a Proxmox node hosting NAS and Jellyfin containers, with shared storage and internal Caddy access to Jellyfin.</desc>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="alomalab-homelab.architecture-redraw-title alomalab-homelab.architecture-redraw-desc">
+      <title id="alomalab-homelab.architecture-redraw-title">AlomaLab homelab and K3s architecture</title>
+      <desc id="alomalab-homelab.architecture-redraw-desc">Architecture showing a Proxmox host with a three-VM K3s cluster and two LXC services, plus a separately managed Raspberry Pi running Caddy outside Kubernetes.</desc>
       <defs>
-        <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
-        <marker id="alomalab-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#4f5d75"/></marker>
-        <marker id="alomalab-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#eb6c36"/></marker>
-        <marker id="alomalab-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2e5aa8"/></marker>
+        <marker id="alomalab-k8s-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0,8 3,0 6" fill="#4f5d75"/>
+        </marker>
+        <marker id="alomalab-k8s-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0,8 3,0 6" fill="#eb6c36"/>
+        </marker>
+        <marker id="alomalab-k8s-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0,8 3,0 6" fill="#2e5aa8"/>
+        </marker>
       </defs>
-      <rect width="1180" height="720" fill="#f5f5f5"/>
 
-      <text x="40" y="44" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing=".16em">ARCHITECTURE · CONFIRMED CONFIGURATION</text>
-      <text x="40" y="88" fill="#2d3142" font-size="28" font-family="'Instrument Serif', serif">AlomaLab homelab</text>
-      <text x="40" y="112" fill="#4f5d75" font-size="12" font-family="Geist, sans-serif">Two Terraform-managed Debian LXC containers on Proxmox, with internal Jellyfin access.</text>
+      <rect width="1280" height="720" fill="#f5f5f5"/>
 
-      <!-- Trust boundary, drawn before connectors and nodes. -->
-      <rect x="464" y="204" width="244" height="312" rx="8" fill="#2d3142" fill-opacity=".02" stroke="#2d3142" stroke-opacity=".18" stroke-width=".8" stroke-dasharray="4 4"/>
-      <rect x="480" y="208" width="176" height="16" rx="2" fill="#f5f5f5"/>
-      <text x="488" y="220" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" letter-spacing=".11em">PROXMOX-MANAGED LXCS</text>
+      <text x="40" y="40" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing=".16em">ARCHITECTURE · DECLARED INFRASTRUCTURE + EXTERNAL PROXY</text>
+      <text x="40" y="80" fill="#2d3142" font-size="28" font-family="'Instrument Serif', serif">AlomaLab homelab</text>
+      <text x="40" y="108" fill="#4f5d75" font-size="12" font-family="Geist, sans-serif">Terraform provisions three K3s VMs; Ansible forms the cluster; Piloma runs Caddy outside Kubernetes.</text>
 
-      <!-- Connectors. -->
-      <line x1="200" y1="368" x2="260" y2="368" fill="none" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#alomalab-arrow-accent)"/>
-      <rect x="208" y="348" width="48" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="232" y="357" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".04em">API · SSH</text>
+      <!-- Zones. -->
+      <rect x="40" y="140" width="856" height="488" rx="8" fill="#2d3142" fill-opacity=".02" stroke="#2d3142" stroke-opacity=".16" stroke-width=".8"/>
+      <rect x="56" y="144" width="184" height="16" rx="2" fill="#f5f5f5"/>
+      <text x="64" y="156" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing=".13em">PROXMOX · 192.168.0.20</text>
 
-      <path d="M420 352 H448 Q456 352 456 344 V292 Q456 284 464 284 H496" fill="none" stroke="#4f5d75" stroke-width="1.1" marker-end="url(#alomalab-arrow)"/>
-      <rect x="376" y="304" width="72" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="412" y="313" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".04em">HOSTS LXC</text>
+      <rect x="64" y="172" width="808" height="236" rx="8" fill="#2d3142" fill-opacity=".018" stroke="#2d3142" stroke-opacity=".12" stroke-width=".8"/>
+      <rect x="80" y="176" width="252" height="16" rx="2" fill="#f5f5f5"/>
+      <text x="88" y="188" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing=".11em">K3S CLUSTER · TERRAFORM VMS + ANSIBLE</text>
 
-      <path d="M420 384 H448 Q456 384 456 392 V440 Q456 448 464 448 H496" fill="none" stroke="#4f5d75" stroke-width="1.1" marker-end="url(#alomalab-arrow)"/>
-      <rect x="376" y="420" width="72" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="412" y="429" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".04em">HOSTS LXC</text>
+      <rect x="64" y="432" width="808" height="124" rx="8" fill="#2d3142" fill-opacity=".018" stroke="#2d3142" stroke-opacity=".12" stroke-width=".8"/>
+      <rect x="80" y="436" width="144" height="16" rx="2" fill="#f5f5f5"/>
+      <text x="88" y="448" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing=".12em">DEBIAN LXC SERVICES</text>
 
-      <path d="M676 284 H712 Q720 284 720 292 V352 Q720 360 728 360 H760" fill="none" stroke="#4f5d75" stroke-width="1.1" marker-end="url(#alomalab-arrow)"/>
-      <rect x="684" y="304" width="96" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="732" y="313" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".03em">/MNT/SHARED</text>
+      <!-- Connectors are drawn before nodes. -->
+      <path d="M400 288 V292 Q400 300 392 300 H204 Q196 300 196 308 V312" fill="none" stroke="#4f5d75" stroke-width="1.1" marker-end="url(#alomalab-k8s-arrow)"/>
+      <rect x="224" y="280" width="72" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="260" y="289" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".06em">K3S JOIN</text>
 
-      <path d="M676 448 H868 Q876 448 876 440 V408" fill="none" stroke="#4f5d75" stroke-width="1.1" marker-end="url(#alomalab-arrow)"/>
-      <rect x="708" y="460" width="136" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="776" y="469" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".03em">MEDIA + SHARED MOUNTS</text>
+      <path d="M480 288 V292 Q480 300 488 300 H708 Q716 300 716 308 V312" fill="none" stroke="#4f5d75" stroke-width="1.1" marker-end="url(#alomalab-k8s-arrow)"/>
+      <rect x="568" y="280" width="64" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="600" y="289" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".06em">K3S JOIN</text>
 
-      <path d="M760 204 H448 Q440 204 440 212 V380 Q440 388 448 388 H580 Q588 388 588 396 V412" fill="none" stroke="#2e5aa8" stroke-width="1.1" marker-end="url(#alomalab-arrow-link)"/>
-      <rect x="584" y="368" width="128" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="648" y="377" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".03em">REVERSE PROXY :8096</text>
+      <line x1="288" y1="504" x2="344" y2="504" stroke="#4f5d75" stroke-width="1.1" marker-end="url(#alomalab-k8s-arrow)"/>
+      <rect x="292" y="484" width="48" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="316" y="493" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".06em">SHARED</text>
 
-      <line x1="990" y1="196" x2="920" y2="196" fill="none" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#alomalab-arrow-accent)"/>
-      <rect x="928" y="176" width="56" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="956" y="185" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".04em">TLS · DNS</text>
+      <line x1="600" y1="504" x2="544" y2="504" stroke="#4f5d75" stroke-width="1.1" marker-end="url(#alomalab-k8s-arrow)"/>
+      <rect x="552" y="484" width="40" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="572" y="493" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".06em">MEDIA</text>
 
-      <!-- Nodes. -->
+      <path d="M1120 288 V512 Q1120 520 1112 520 H840" fill="none" stroke="#2e5aa8" stroke-width="1.1" marker-end="url(#alomalab-k8s-arrow-link)"/>
+      <rect x="880" y="500" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="932" y="509" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".05em">CADDY :8096</text>
+
+      <!-- Kubernetes nodes. -->
       <g>
-        <rect x="40" y="332" width="160" height="72" rx="6" fill="#f5f5f5"/>
-        <rect x="40" y="332" width="160" height="72" rx="6" fill="#2d3142" fill-opacity=".03" stroke="#2d3142" stroke-opacity=".30"/>
-        <rect x="48" y="340" width="56" height="12" rx="2" fill="none" stroke="#4f5d75" stroke-opacity=".45" stroke-width=".8"/>
-        <text x="76" y="349" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">AUTOMATION</text>
-        <text x="120" y="374" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Terraform + Ansible</text>
-        <text x="120" y="391" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">provision + configure</text>
+        <rect x="320" y="208" width="240" height="80" rx="6" fill="#f5f5f5"/>
+        <rect x="320" y="208" width="240" height="80" rx="6" fill="#eb6c36" fill-opacity=".10" stroke="#eb6c36" stroke-width="1.2"/>
+        <rect x="328" y="216" width="72" height="12" rx="2" fill="none" stroke="#eb6c36" stroke-opacity=".60" stroke-width=".8"/>
+        <text x="364" y="225" fill="#eb6c36" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">K3S SERVER</text>
+        <text x="440" y="253" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">K3s control plane</text>
+        <text x="440" y="273" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">VMID 20100 · 192.168.0.200</text>
       </g>
+
       <g>
-        <rect x="260" y="332" width="160" height="72" rx="6" fill="#f5f5f5"/>
-        <rect x="260" y="332" width="160" height="72" rx="6" fill="#fff" stroke="#2d3142"/>
-        <rect x="268" y="340" width="40" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".40" stroke-width=".8"/>
-        <text x="288" y="349" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">HOST</text>
-        <text x="340" y="374" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Proxmox node</text>
-        <text x="340" y="391" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">192.168.0.20 · vmbr0</text>
+        <rect x="96" y="312" width="200" height="80" rx="6" fill="#f5f5f5"/>
+        <rect x="96" y="312" width="200" height="80" rx="6" fill="#fff" stroke="#2d3142"/>
+        <rect x="104" y="320" width="72" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".40" stroke-width=".8"/>
+        <text x="140" y="329" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">K3S AGENT</text>
+        <text x="196" y="357" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">K3s worker 01</text>
+        <text x="196" y="377" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">VMID 20101 · 192.168.0.201</text>
       </g>
+
       <g>
-        <rect x="496" y="248" width="180" height="72" rx="6" fill="#f5f5f5"/>
-        <rect x="496" y="248" width="180" height="72" rx="6" fill="#fff" stroke="#2d3142"/>
-        <rect x="504" y="256" width="32" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".40" stroke-width=".8"/>
-        <text x="520" y="265" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">LXC</text>
-        <text x="586" y="290" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">NAS LXC</text>
-        <text x="586" y="307" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">VMID 102 · Samba · Syncthing</text>
+        <rect x="616" y="312" width="200" height="80" rx="6" fill="#f5f5f5"/>
+        <rect x="616" y="312" width="200" height="80" rx="6" fill="#fff" stroke="#2d3142"/>
+        <rect x="624" y="320" width="72" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".40" stroke-width=".8"/>
+        <text x="660" y="329" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">K3S AGENT</text>
+        <text x="716" y="357" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">K3s worker 02</text>
+        <text x="716" y="377" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">VMID 20102 · 192.168.0.202</text>
       </g>
+
+      <!-- External reverse proxy. -->
       <g>
-        <rect x="496" y="412" width="180" height="72" rx="6" fill="#f5f5f5"/>
-        <rect x="496" y="412" width="180" height="72" rx="6" fill="#eb6c36" fill-opacity=".10" stroke="#eb6c36" stroke-width="1.2"/>
-        <rect x="504" y="420" width="32" height="12" rx="2" fill="none" stroke="#eb6c36" stroke-opacity=".60" stroke-width=".8"/>
-        <text x="520" y="429" fill="#b7522b" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">LXC</text>
-        <text x="586" y="454" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Jellyfin LXC</text>
-        <text x="586" y="471" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">VMID 103 · Jellyfin :8096</text>
+        <rect x="1000" y="208" width="240" height="80" rx="6" fill="#f5f5f5"/>
+        <rect x="1000" y="208" width="240" height="80" rx="6" fill="#2d3142" fill-opacity=".025" stroke="#2d3142" stroke-opacity=".30" stroke-dasharray="4 3"/>
+        <rect x="1008" y="216" width="80" height="12" rx="2" fill="none" stroke="#4f5d75" stroke-opacity=".45" stroke-width=".8"/>
+        <text x="1048" y="225" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">CADDY · EXTERNAL</text>
+        <text x="1120" y="248" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Piloma reverse proxy</text>
+        <text x="1120" y="266" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Piloma · 192.168.0.14</text>
+        <text x="1120" y="279" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Caddy · outside Kubernetes</text>
       </g>
+
+      <!-- LXC services and storage. -->
       <g>
-        <rect x="760" y="336" width="188" height="72" rx="6" fill="#f5f5f5"/>
-        <rect x="760" y="336" width="188" height="72" rx="6" fill="#2d3142" fill-opacity=".05" stroke="#4f5d75"/>
-        <rect x="768" y="344" width="40" height="12" rx="2" fill="none" stroke="#4f5d75" stroke-opacity=".45" stroke-width=".8"/>
-        <text x="788" y="353" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">STORE</text>
-        <text x="854" y="378" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Host-backed storage</text>
-        <text x="854" y="395" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">/mnt/hdd · shared + media</text>
+        <rect x="88" y="464" width="200" height="80" rx="6" fill="#f5f5f5"/>
+        <rect x="88" y="464" width="200" height="80" rx="6" fill="#fff" stroke="#2d3142"/>
+        <rect x="96" y="472" width="32" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".40" stroke-width=".8"/>
+        <text x="112" y="481" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">LXC</text>
+        <text x="188" y="509" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">NAS LXC</text>
+        <text x="188" y="529" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">VMID 102 · Samba · Syncthing</text>
       </g>
+
       <g>
-        <rect x="760" y="160" width="160" height="72" rx="6" fill="#f5f5f5"/>
-        <rect x="760" y="160" width="160" height="72" rx="6" fill="#eb6c36" fill-opacity=".05" stroke="#eb6c36" stroke-opacity=".50" stroke-dasharray="4 4"/>
-        <rect x="768" y="168" width="56" height="12" rx="2" fill="none" stroke="#eb6c36" stroke-opacity=".50" stroke-width=".8"/>
-        <text x="796" y="177" fill="#b7522b" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">SECURITY</text>
-        <text x="840" y="202" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Piloma</text>
-        <text x="840" y="219" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">192.168.0.14 · Caddy</text>
+        <rect x="344" y="464" width="200" height="80" rx="6" fill="#f5f5f5"/>
+        <rect x="344" y="464" width="200" height="80" rx="6" fill="#2d3142" fill-opacity=".05" stroke="#4f5d75"/>
+        <rect x="352" y="472" width="40" height="12" rx="2" fill="none" stroke="#4f5d75" stroke-opacity=".45" stroke-width=".8"/>
+        <text x="372" y="481" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">STORE</text>
+        <text x="444" y="509" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Host-backed storage</text>
+        <text x="444" y="529" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">/mnt/hdd · shared + media</text>
       </g>
+
       <g>
-        <rect x="990" y="160" width="150" height="72" rx="6" fill="#f5f5f5"/>
-        <rect x="990" y="160" width="150" height="72" rx="6" fill="#2d3142" fill-opacity=".03" stroke="#2d3142" stroke-opacity=".30"/>
-        <rect x="998" y="168" width="56" height="12" rx="2" fill="none" stroke="#4f5d75" stroke-opacity=".45" stroke-width=".8"/>
-        <text x="1026" y="177" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">EXTERNAL</text>
-        <text x="1065" y="202" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Home clients</text>
-        <text x="1065" y="219" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Jellyfin users</text>
+        <rect x="600" y="464" width="240" height="80" rx="6" fill="#f5f5f5"/>
+        <rect x="600" y="464" width="240" height="80" rx="6" fill="#fff" stroke="#2d3142"/>
+        <rect x="608" y="472" width="32" height="12" rx="2" fill="none" stroke="#2d3142" stroke-opacity=".40" stroke-width=".8"/>
+        <text x="624" y="481" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing=".08em">LXC</text>
+        <text x="720" y="509" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Jellyfin LXC</text>
+        <text x="720" y="529" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">VMID 103 · Jellyfin :8096</text>
+      </g>
+
+      <!-- Declared network not used by the K3s VMs. -->
+      <g>
+        <rect x="64" y="580" width="808" height="32" rx="6" fill="#2d3142" fill-opacity=".02" stroke="#2d3142" stroke-opacity=".20" stroke-dasharray="4 3"/>
+        <text x="80" y="600" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing=".10em">RESERVED SDN</text>
+        <text x="196" y="600" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace">k3szone · k3svnet · vmbr20 · 192.168.20.0/24 · no K3s VM attachment</text>
       </g>
 
       <!-- Legend. -->
-      <line x1="40" y1="640" x2="1140" y2="640" stroke="#2d3142" stroke-opacity=".12" stroke-width=".8"/>
-      <text x="40" y="668" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing=".14em">LEGEND</text>
-      <rect x="132" y="657" width="12" height="12" rx="2" fill="#fff" stroke="#2d3142"/>
-      <text x="152" y="667" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">managed host / service</text>
-      <rect x="332" y="657" width="12" height="12" rx="2" fill="#2d3142" fill-opacity=".05" stroke="#4f5d75"/>
-      <text x="352" y="667" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">host-backed storage</text>
-      <rect x="520" y="657" width="12" height="12" rx="2" fill="#eb6c36" fill-opacity=".05" stroke="#eb6c36" stroke-opacity=".50" stroke-dasharray="3 2"/>
-      <text x="540" y="667" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">security / ingress</text>
-      <line x1="714" y1="663" x2="738" y2="663" stroke="#2e5aa8" stroke-width="1.1" marker-end="url(#alomalab-arrow-link)"/>
-      <text x="748" y="667" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">HTTP proxy route</text>
-      <text x="40" y="700" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">SOURCE: TERRAFORM + ANSIBLE DECLARATIONS · RUNTIME STATE NOT IMPLIED</text>
+      <line x1="40" y1="648" x2="1240" y2="648" stroke="#2d3142" stroke-opacity=".12" stroke-width=".8"/>
+      <text x="40" y="676" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing=".14em">LEGEND</text>
+
+      <rect x="132" y="665" width="12" height="12" rx="2" fill="#fff" stroke="#2d3142"/>
+      <text x="152" y="675" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">Terraform guest</text>
+
+      <rect x="280" y="665" width="12" height="12" rx="2" fill="#eb6c36" fill-opacity=".10" stroke="#eb6c36"/>
+      <text x="300" y="675" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">K3s control plane</text>
+
+      <rect x="464" y="665" width="12" height="12" rx="2" fill="#2d3142" fill-opacity=".025" stroke="#2d3142" stroke-opacity=".30" stroke-dasharray="3 2"/>
+      <text x="484" y="675" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">external host</text>
+
+      <line x1="660" y1="671" x2="684" y2="671" stroke="#2e5aa8" stroke-width="1.1" marker-end="url(#alomalab-k8s-arrow-link)"/>
+      <text x="696" y="675" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">Caddy route</text>
+
+      <rect x="816" y="665" width="24" height="12" rx="2" fill="#2d3142" fill-opacity=".02" stroke="#2d3142" stroke-opacity=".20" stroke-dasharray="3 2"/>
+      <text x="850" y="675" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">declared, unattached infrastructure</text>
+
+      <text x="40" y="706" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace">SOURCE: TERRAFORM + ANSIBLE · PILOMA IS THE EXTERNAL CADDY HOST · RUNTIME STATE NOT IMPLIED</text>
     </svg>
-    <aside class="notes">
-      <p><strong>Operational prerequisites:</strong> DNS for <code>jellyfin.alomalab.internal</code> and trust of Caddy’s local CA are configured outside this repository. Syncthing is installed on both LXC hosts, but device pairing and folders are not declared.</p>
-    </aside>
+
+    <section class="notes" aria-label="Architecture notes">
+      <article class="note">
+        <h2>Code boundary</h2>
+        <p>Terraform owns the three Proxmox K3s VMs. Ansible’s <code>server</code> and <code>agent</code> groups install the cluster. Piloma is outside Kubernetes and remains in the inventory only as the Caddy reverse-proxy host.</p>
+      </article>
+      <article class="note">
+        <h2>Network boundary</h2>
+        <p>The K3s VMs use <code>vmbr0</code> and <code>192.168.0.200–202</code>. The separately declared <code>vmbr20</code>/<code>192.168.20.0/24</code> SDN is not attached to those VMs.</p>
+      </article>
+    </section>
   </main>
 </body>
 </html>

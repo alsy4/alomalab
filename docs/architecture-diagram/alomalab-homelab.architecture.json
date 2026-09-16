@@ -7,32 +7,58 @@
     "locale": "en",
     "repository": {
       "url": "https://github.com/alsy4/alomalab",
-      "revision": "d7d7f6a59af6c48b6cb9fcc73d15aa68cb59ba34"
+      "revision": "611218295e4d208b41b1d0813b0995c97a95c195"
     },
-    "viewBox": [1180, 720]
+    "viewBox": [1280, 760]
   },
   "components": [
     {
-      "id": "automation",
-      "type": "external",
-      "label": "Terraform and Ansible",
-      "sublabel": "Provisioning and configuration",
-      "pos": [40, 280],
-      "size": [160, 72],
+      "id": "k3s_cp",
+      "type": "backend",
+      "label": "K3s control plane",
+      "sublabel": "VMID 20100 · 192.168.0.200",
+      "pos": [360, 150],
+      "size": [220, 72],
       "sources": [
-        { "path": "terraform/environments/homelab/main.tf", "label": "Terraform" },
-        { "path": "ansible/inventory/homelab.yml", "label": "Ansible inventory" }
+        { "path": "terraform/environments/homelab/k3s.tf", "line": 1, "label": "Control-plane VM" },
+        { "path": "ansible/inventory/homelab.yml", "line": 30, "label": "K3s server inventory" }
       ]
     },
     {
-      "id": "proxmox",
+      "id": "k3s_worker_01",
       "type": "backend",
-      "label": "Proxmox node",
-      "sublabel": "192.168.0.20 · vmbr0",
-      "pos": [260, 280],
-      "size": [160, 72],
+      "label": "K3s worker 01",
+      "sublabel": "VMID 20101 · 192.168.0.201",
+      "pos": [120, 300],
+      "size": [220, 72],
       "sources": [
-        { "path": "ansible/inventory/homelab.yml", "line": 18, "label": "Inventory" }
+        { "path": "terraform/environments/homelab/k3s.tf", "line": 27, "label": "Worker VM map" },
+        { "path": "ansible/inventory/homelab.yml", "line": 35, "label": "K3s agent inventory" }
+      ]
+    },
+    {
+      "id": "k3s_worker_02",
+      "type": "backend",
+      "label": "K3s worker 02",
+      "sublabel": "VMID 20102 · 192.168.0.202",
+      "pos": [600, 300],
+      "size": [220, 72],
+      "sources": [
+        { "path": "terraform/environments/homelab/k3s.tf", "line": 27, "label": "Worker VM map" },
+        { "path": "ansible/inventory/homelab.yml", "line": 37, "label": "K3s agent inventory" }
+      ]
+    },
+    {
+      "id": "piloma_proxy",
+      "type": "external",
+      "label": "Piloma reverse proxy",
+      "sublabel": "Piloma · 192.168.0.14 · Caddy",
+      "tag": "outside Kubernetes",
+      "pos": [990, 220],
+      "size": [220, 76],
+      "sources": [
+        { "path": "ansible/inventory/homelab.yml", "line": 14, "label": "Piloma inventory" },
+        { "path": "ansible/playbooks/jellyfin/setup-jellyfin.yml", "line": 84, "label": "Caddy role" }
       ]
     },
     {
@@ -40,133 +66,100 @@
       "type": "backend",
       "label": "NAS LXC",
       "sublabel": "VMID 102 · Samba · Syncthing",
-      "pos": [510, 190],
-      "size": [180, 72],
+      "pos": [100, 500],
+      "size": [220, 72],
       "sources": [
-        { "path": "terraform/environments/homelab/main.tf", "line": 1, "label": "NAS container" },
-        { "path": "ansible/playbooks/nas/samba-setup.yml", "label": "Samba" }
-      ]
-    },
-    {
-      "id": "jellyfin",
-      "type": "backend",
-      "label": "Jellyfin LXC",
-      "sublabel": "VMID 103 · Jellyfin :8096 · Syncthing",
-      "pos": [510, 390],
-      "size": [180, 72],
-      "sources": [
-        { "path": "terraform/environments/homelab/main.tf", "line": 36, "label": "Jellyfin container" },
-        { "path": "ansible/playbooks/jellyfin/setup-jellyfin.yml", "label": "Jellyfin" }
+        { "path": "terraform/environments/homelab/lxc.tf", "line": 1, "label": "NAS container" },
+        { "path": "ansible/playbooks/nas/samba-setup.yml", "line": 13, "label": "Samba" }
       ]
     },
     {
       "id": "storage",
       "type": "database",
       "label": "Host-backed storage",
-      "sublabel": "/mnt/hdd shared and media paths",
-      "pos": [760, 310],
-      "size": [190, 72],
+      "sublabel": "/mnt/hdd · shared + media",
+      "pos": [410, 500],
+      "size": [220, 72],
       "sources": [
-        { "path": "terraform/environments/homelab/main.tf", "line": 22, "label": "Bind mounts" }
+        { "path": "terraform/environments/homelab/lxc.tf", "line": 30, "label": "Bind mounts" }
       ]
     },
     {
-      "id": "piloma",
-      "type": "security",
-      "label": "Piloma",
-      "sublabel": "192.168.0.14 · Caddy",
-      "pos": [760, 120],
-      "size": [160, 72],
+      "id": "jellyfin",
+      "type": "backend",
+      "label": "Jellyfin LXC",
+      "sublabel": "VMID 103 · Jellyfin :8096",
+      "pos": [720, 500],
+      "size": [220, 72],
       "sources": [
-        { "path": "ansible/inventory/homelab.yml", "line": 13, "label": "Reverse proxy" },
-        { "path": "ansible/playbooks/jellyfin/setup-jellyfin.yml", "label": "Caddy route" }
+        { "path": "terraform/environments/homelab/lxc.tf", "line": 41, "label": "Jellyfin container" },
+        { "path": "ansible/playbooks/jellyfin/setup-jellyfin.yml", "line": 10, "label": "Jellyfin service" }
       ]
     },
     {
-      "id": "clients",
+      "id": "reserved_sdn",
       "type": "external",
-      "label": "Home-network clients",
-      "sublabel": "Jellyfin users",
-      "pos": [990, 120],
-      "size": [150, 72]
+      "label": "Reserved K3s SDN",
+      "sublabel": "vmbr20 · 192.168.20.0/24 · no VM attachment",
+      "tag": "declared, inactive path",
+      "pos": [360, 640],
+      "size": [300, 64],
+      "sources": [
+        { "path": "terraform/modules/sdn/main.tf", "line": 1, "label": "SDN resources" },
+        { "path": "terraform/environments/homelab/k3s.tf", "line": 1, "label": "VM networking" }
+      ]
     }
   ],
   "boundaries": [
     {
       "kind": "region",
-      "label": "Proxmox-managed LXC containers",
-      "wraps": ["nas", "jellyfin"],
-      "pad": 38
+      "label": "Proxmox · 192.168.0.20",
+      "wraps": ["k3s_cp", "k3s_worker_01", "k3s_worker_02", "nas", "storage", "jellyfin", "reserved_sdn"],
+      "pad": 44
+    },
+    {
+      "kind": "region",
+      "label": "Terraform VMs · Ansible K3s cluster",
+      "wraps": ["k3s_cp", "k3s_worker_01", "k3s_worker_02"],
+      "pad": 30
+    },
+    {
+      "kind": "region",
+      "label": "Debian LXC services",
+      "wraps": ["nas", "storage", "jellyfin"],
+      "pad": 30
     }
   ],
   "connections": [
-    {
-      "id": "automation-proxmox",
-      "from": "automation",
-      "to": "proxmox",
-      "label": "Proxmox API and SSH",
-      "labelAt": [230, 260],
-      "variant": "emphasis"
-    },
-    {
-      "id": "proxmox-nas",
-      "from": "proxmox",
-      "to": "nas",
-      "label": "hosts LXC",
-      "fromSide": "right",
-      "toSide": "left"
-    },
-    {
-      "id": "proxmox-jellyfin",
-      "from": "proxmox",
-      "to": "jellyfin",
-      "label": "hosts LXC",
-      "labelAt": [465, 340],
-      "fromSide": "right",
-      "toSide": "left"
-    },
-    {
-      "id": "nas-storage",
-      "from": "nas",
-      "to": "storage",
-      "label": "/mnt/shared bind mount",
-      "fromSide": "right",
-      "toSide": "left"
-    },
-    {
-      "id": "jellyfin-storage",
-      "from": "jellyfin",
-      "to": "storage",
-      "label": "media and shared bind mounts",
-      "fromSide": "right",
-      "toSide": "bottom"
-    },
-    {
-      "id": "piloma-jellyfin",
-      "from": "piloma",
-      "to": "jellyfin",
-      "label": "reverse proxy to :8096",
-      "fromSide": "left",
-      "toSide": "top",
-      "via": [[20, 156], [20, 370], [600, 370]],
-      "labelAt": [400, 370]
-    },
-    {
-      "id": "clients-piloma",
-      "from": "clients",
-      "to": "piloma",
-      "label": "jellyfin.alomalab.internal · TLS",
-      "labelAt": [955, 206],
-      "variant": "emphasis"
-    }
+    { "id": "cp_worker_01", "from": "k3s_cp", "to": "k3s_worker_01", "label": "K3s agent join", "variant": "emphasis" },
+    { "id": "cp_worker_02", "from": "k3s_cp", "to": "k3s_worker_02", "label": "K3s agent join", "variant": "emphasis" },
+    { "id": "nas_storage", "from": "nas", "to": "storage", "label": "/mnt/shared" },
+    { "id": "jellyfin_storage", "from": "jellyfin", "to": "storage", "label": "media + shared mounts", "labelAt": [675, 586] },
+    { "id": "piloma_jellyfin", "from": "piloma_proxy", "to": "jellyfin", "label": "Caddy reverse proxy :8096", "variant": "security" }
   ],
   "cards": [
     {
-      "dot": "amber",
-      "title": "Operational prerequisites",
+      "dot": "orange",
+      "title": "Kubernetes",
       "items": [
-        "DNS for jellyfin.alomalab.internal and trust of Caddy's local CA are configured outside this repository.",
-        "Syncthing is provisioned on both LXC hosts, but device pairing and folders are not declared."
+        "K3s v1.36.3+k3s1 is installed through k3s-ansible.",
+        "The server endpoint is the control-plane inventory address."
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Ownership",
+      "items": [
+        "Terraform owns the three Proxmox VMs; Ansible owns cluster setup.",
+        "Piloma remains outside Kubernetes and serves only as the Caddy reverse proxy."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Network",
+      "items": [
+        "K3s VMs use vmbr0 and 192.168.0.200–202.",
+        "vmbr20 and 192.168.20.0/24 remain declared but unattached to the VMs."
       ]
     }
   ]

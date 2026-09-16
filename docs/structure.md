@@ -2,75 +2,83 @@
 
 ```text
 .
-├── .codex/                                      # Codex agent configuration
-│   ├── AGENTS.md                                # Repository instructions for Codex
+├── .codex/                                      # Repository-local Codex configuration
+│   ├── AGENTS.md                                # Response and workflow guidance
 │   ├── config.toml                              # Enables configured agents
 │   └── agents/
-│       └── documentation.toml                   # Documentation-agent definition and scope
+│       └── documentation.toml                   # Documentation-agent scope
 ├── .github/
 │   └── workflows/
-│       └── documentation-agent.yml              # Documentation-update automation on main
-├── ansible/                                     # Service and host configuration
-│   ├── README.md                                # Playbook commands and operating notes
+│       └── documentation-agent.yml              # Automated documentation update/render workflow
+├── ansible/                                     # Host and service configuration
+│   ├── README.md                                # Commands, boundaries, and operating notes
+│   ├── requirements.yml                         # Git-sourced k3s-ansible collection
 │   ├── inventory/
-│   │   └── homelab.yml                          # Managed hosts and address mapping
+│   │   └── homelab.yml                          # LXC, Proxmox, Piloma, and K3s host groups
 │   └── playbooks/
 │       ├── jellyfin/
-│       │   ├── qbittorrent-setup.yml            # Installs and starts qBittorrent-nox
-│       │   ├── radarr-setup.yml                 # Installs and starts Radarr
-│       │   ├── setup-jellyfin.yml               # Configures Jellyfin and its Caddy proxy route
-│       │   ├── setup-mount-points.yml           # Configures Jellyfin LXC bind mounts in Proxmox
-│       │   └── update-debian.yml                # Updates Debian LXC packages
+│       │   ├── qbittorrent-setup.yml            # Installs qBittorrent-nox
+│       │   ├── radarr-setup.yml                 # Installs Radarr
+│       │   ├── setup-jellyfin.yml               # Installs Jellyfin and manages its Caddy route
+│       │   ├── setup-mount-points.yml           # Manages Jellyfin LXC bind mounts with pct
+│       │   └── update-debian.yml                # Updates both Debian LXC hosts
+│       ├── k3s/
+│       │   ├── setup-k3s.yml                    # Imports the k3s-ansible cluster playbook
+│       │   └── update-debian.yml                # K3s update playbook; target group needs alignment
 │       └── nas/
-│           ├── samba-setup.yml                  # Configures NAS Samba shares
-│           ├── samba-teardown.yml               # Removes Samba while retaining share data
-│           └── setup-syncthing.yml              # Installs Syncthing on both Debian LXC hosts
-├── docs/                                        # Repository documentation
-│   ├── architecture.md                           # Confirmed homelab topology and dependencies
-│   ├── architecture-diagram/                     # Archify architecture-diagram source and delivered artifacts
-│   │   ├── alomalab-homelab.architecture.html    # Delivered interactive architecture diagram
-│   │   └── alomalab-homelab.architecture.json    # Source for the confirmed topology diagram
+│           ├── samba-setup.yml                  # Configures authenticated Samba shares
+│           ├── samba-teardown.yml               # Removes Samba without deleting share data
+│           └── setup-syncthing.yml              # Installs Syncthing on both Debian LXCs
+├── docs/
+│   ├── architecture.md                          # Implemented topology and ownership boundaries
+│   ├── architecture-diagram/
+│   │   ├── alomalab-homelab.architecture.json   # Archify topology source
+│   │   ├── alomalab-homelab.architecture.html   # Generated interactive architecture view
+│   │   ├── alomalab-homelab.architecture-redraw.html
+│   │   │                                        # Diagram-design source for the static figure
+│   │   └── alomalab-homelab.architecture-redraw.svg
+│   │                                            # README/docs vector export
 │   ├── LOGS.md                                  # Chronological implementation log
-│   └── structure.md                              # This guide
-├── terraform/                                   # Proxmox infrastructure definitions
-│   ├── .terraform.lock.hcl                      # Locked provider selections
-│   ├── versions.tf                              # Root Terraform and provider requirements
+│   └── structure.md                             # This guide
+├── terraform/
+│   ├── versions.tf                              # Root Terraform/provider requirements
 │   ├── environments/
 │   │   └── homelab/
-│   │       ├── .terraform.lock.hcl              # Environment provider lock file
-│   │       ├── k3s.tf                           # K3s control-plane VM declaration
+│   │       ├── .terraform.lock.hcl              # Locked environment provider selection
+│   │       ├── image.tf                         # Downloads the Ubuntu Jammy cloud image
+│   │       ├── k3s.tf                           # Control plane and two worker VMs
 │   │       ├── lxc.tf                           # NAS and Jellyfin LXC declarations
-│   │       ├── network.tf                       # Instantiates the K3s SDN and bridge module
+│   │       ├── network.tf                       # Instantiates the reserved Proxmox SDN
 │   │       ├── providers.tf                     # Proxmox provider configuration
-│   │       ├── variables.tf                     # Environment inputs and credentials
+│   │       ├── variables.tf                     # Environment inputs and sensitive values
 │   │       └── versions.tf                      # Environment Terraform requirements
-│   ├── modules/                                 # Reusable Proxmox infrastructure modules
+│   └── modules/
 │       ├── k3s/
-│       │   ├── main.tf                          # Ubuntu VM image download and VM resource
-│       │   ├── outputs.tf                       # Reserved module outputs file (currently empty)
-│       │   ├── variables.tf                     # K3s VM inputs
+│       │   ├── main.tf                          # Reusable Ubuntu VM resource
+│       │   ├── outputs.tf                       # Reserved module outputs file
+│       │   ├── variables.tf                     # VM sizing, image, network, and account inputs
 │       │   └── versions.tf                      # Module Terraform requirements
 │       ├── pve-lxc/
-│           ├── main.tf                          # Reusable Debian LXC resource
-│           ├── outputs.tf                       # LXC ID, hostname, and node outputs
-│           ├── variables.tf                     # LXC resource inputs, including bind mounts
-│           └── versions.tf                      # Module Terraform requirements
+│       │   ├── main.tf                          # Reusable Debian LXC resource
+│       │   ├── outputs.tf                       # LXC ID, hostname, and node outputs
+│       │   ├── variables.tf                     # LXC and bind-mount inputs
+│       │   └── versions.tf                      # Module Terraform requirements
 │       └── sdn/
-│           ├── main.tf                          # K3s SDN zone, VNet, subnet, applier, and bridge
-│           ├── variable.tf                      # Reserved module variables file (currently empty)
+│           ├── main.tf                          # Zone, VNet, subnet, applier, and vmbr20 bridge
+│           ├── outputs.tf                       # VNet identifier
+│           ├── variable.tf                      # Reserved module variables file
 │           └── versions.tf                      # Module Terraform requirements
-│   └── versions.tf                               # Root Terraform and provider requirements
-└── .gitignore                                   # Excludes local Terraform artifacts
+└── .gitignore                                   # Excludes local Terraform state and tfvars
 ```
 
-`terraform/` provisions the LXC infrastructure, K3s network, and control-plane
-VM; `ansible/` configures hosts and services after provisioning. `.github/`
-contains GitHub Actions automation, while `.codex/` constrains the
-repository-local documentation agent. After a
-qualifying documentation-agent run, the workflow renders the Archify source to
-an HTML artifact in `docs/architecture-diagram/`. The workflow creates a
-documentation pull request with the
-`DOCUMENTATION_PR_TOKEN` repository secret when it has documentation changes to
-publish. Generated Terraform working directories, state, variable files, and
-backup state files are excluded by `.gitignore`; a committed state backup is
-not part of the maintained repository structure.
+Terraform owns the Proxmox guests and the separately declared SDN. Ansible
+configures K3s and the services after provisioning. The active K3s VMs use
+`vmbr0`; `network.tf` still instantiates `vmbr20`, but `k3s.tf` does not attach
+the VMs to it.
+
+Generated `.terraform/` directories, state, state backups, and `*.tfvars` are
+ignored. One historical state backup,
+`terraform/environments/homelab/terraform.tfstate.1789457976.backup`, remains
+tracked from an earlier commit even though it is not maintained source. Treat
+it as sensitive and remove it from repository history in a separate,
+deliberate security change.

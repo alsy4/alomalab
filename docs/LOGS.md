@@ -1,12 +1,38 @@
 # Implementation log
 
+[2026-09-16 14:26 UTC] - Removed Piloma from the K3s cluster
+
+The Raspberry Pi formerly identified as `pi-worker-01` is no longer a
+Kubernetes node. Piloma (`192.168.0.14`) remains the externally managed Caddy
+reverse proxy, while the K3s cluster now consists only of the Proxmox control
+plane and two worker VMs at `192.168.0.200–202`.
+
+[2026-09-16 08:15 UTC] - Added the K3s inventory and cluster setup playbook
+
+Commits `4870582` and `6112182` added the `k3s_cluster` inventory with one
+`server` (`192.168.0.200`) and two `agent` hosts (`192.168.0.201–202`), added a
+Git-sourced `k3s-ansible` collection requirement, and added a wrapper that pins
+K3s to `v1.36.3+k3s1` and imports `k3s.orchestration.site`. The accompanying
+Debian update playbook targets `k3s_nodes`, which is not defined by the current
+inventory and therefore selects no hosts.
+
+[2026-09-15 10:36 UTC] - Expanded K3s to a three-VM cluster on vmbr0
+
+Commit `419dcdc` moved `k3s-cp-01` from the reserved `vmbr20` subnet to
+`vmbr0` at `192.168.0.200`, added `k3s-worker-01` and `k3s-worker-02` at
+`192.168.0.201–202`, and imported the shared Ubuntu Jammy image into each VM.
+The two workers use VMIDs `20101–20102`, one vCPU, 1 GiB of dedicated memory,
+and an 8 GiB disk each. The SDN resources remained declared but ceased to be
+part of the VM path.
+
 [2026-09-15 08:06 UTC] - Added the K3s control-plane VM and separated environment declarations
 
 Commits `8085466` and `33a628f` added the reusable K3s VM module and the
 `k3s-cp-01` declaration: an Ubuntu Jammy VM (VMID `20100`) on `vmbr20` at
 `192.168.20.100/24`. The VM depends on the network module. They also moved the
 NAS and Jellyfin declarations to `lxc.tf` and placed the network module call
-in `network.tf`. These commits declare the K3s host but do not install K3s.
+in `network.tf`. These commits declared the initial K3s host but did not install
+K3s; commit `419dcdc` later replaced this single-VM network arrangement.
 
 [2026-09-15 08:00 UTC] - Replaced the temporary VLAN module with Proxmox SDN
 
