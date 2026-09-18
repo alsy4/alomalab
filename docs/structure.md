@@ -32,6 +32,8 @@
 ├── docs/
 │   ├── architecture.md                          # Implemented topology and ownership boundaries
 │   ├── architecture-diagram/
+│   │   ├── k3s-architecture.svg                # Current DNS/Caddy/K3s application diagram
+│   │   ├── k3s-architecture.html               # SVG authoring source + evidence notes
 │   │   ├── alomalab-homelab.architecture.json   # Archify topology source
 │   │   ├── alomalab-homelab.architecture.html   # Generated interactive architecture view
 │   │   ├── alomalab-homelab.architecture-redraw.html
@@ -40,6 +42,16 @@
 │   │                                            # README/docs vector export
 │   ├── LOGS.md                                  # Chronological implementation log
 │   └── structure.md                             # This guide
+├── kube/
+│   └── glance-dashboard/                       # Glance application manifests and runbook
+│       ├── README.md                          # Apply, configuration, DNS/Caddy and diagnostics
+│       ├── deployment.yml                     # Two-replica Deployment + ClusterIP Service
+│       ├── ingress.yml                        # Traefik host/path routing
+│       ├── configmap.yml                      # Generated glance.yml + home.yml data
+│       ├── assets-configmap.yml               # Generated user.css data
+│       ├── config/                            # Editable Glance configuration source
+│       ├── assets/                            # Editable CSS source
+│       └── docker-compose.yml                 # Original Compose reference
 ├── terraform/
 │   ├── versions.tf                              # Root Terraform/provider requirements
 │   ├── environments/
@@ -82,3 +94,9 @@ ignored. One historical state backup,
 tracked from an earlier commit even though it is not maintained source. Treat
 it as sensitive and remove it from repository history in a separate,
 deliberate security change.
+
+The K3s diagram complements the original homelab JSON/HTML overview. It includes
+verified live routes and explicitly labeled discrepancies; it does not imply
+that Caddy or Pi-hole configuration is checked into this repository.
+The existing untracked `docs-agent.yml` workflow is an additional draft alongside
+`documentation-agent.yml`; this documentation update does not modify either.
