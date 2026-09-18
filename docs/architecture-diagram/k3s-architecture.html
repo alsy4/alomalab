@@ -1,0 +1,149 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AlomaLab K3s architecture</title><style>body{margin:0;background:#f5f5f5;color:#2d3142;font-family:Arial,sans-serif}main{max-width:1600px;margin:auto}svg{display:block;width:100%;height:auto}aside{margin:0 40px 40px;padding:24px;border:1px solid #c8ced7;line-height:1.6}a{color:#2e5aa8}code{font-family:monospace}</style></head><body><main><svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1540" viewBox="0 0 1600 1540" role="img" aria-labelledby="k3s-architecture-title k3s-architecture-desc">
+<title id="k3s-architecture-title">AlomaLab K3s architecture</title><desc id="k3s-architecture-desc">Verified Caddy to Traefik to Glance routing, separate Pi-hole DNS resolution with a current DNS discrepancy, Deployment and ReplicaSet ownership of two Pods, ConfigMap volume mounts, and the three Proxmox K3s hosts.</desc><defs>
+<marker id="k3s-http" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="#2e5aa8"/></marker>
+<marker id="k3s-control" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="#4f5d75"/></marker>
+<marker id="k3s-config" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="#426858"/></marker>
+<marker id="k3s-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="#4f5d75"/></marker>
+<marker id="k3s-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="#eb6c36"/></marker>
+<marker id="k3s-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="#2e5aa8"/></marker>
+</defs>
+<rect x="0" y="0" width="1600" height="1540" rx="0" fill="#f5f5f5" stroke="none"/>
+<text x="40" y="44" font-family="sans-serif" font-size="13" font-weight="600" fill="#4f5d75">ALOMALAB / CURRENT KUBERNETES ARCHITECTURE</text>
+<text x="40" y="92" font-family="serif" font-size="38" font-weight="400" fill="#2d3142">From a hostname to two running dashboards</text>
+<text x="40" y="124" font-family="sans-serif" font-size="16" font-weight="400" fill="#4f5d75">Glance • Pi-hole + Caddy on Piloma • Traefik on K3s • read-only verification: 18 September 2026</text>
+<rect x="40" y="156" width="1520" height="284" rx="8" fill="#eef0f2" stroke="#c8ced7"/>
+<text x="64" y="186" font-family="sans-serif" font-size="13" font-weight="600" fill="#4f5d75">01 / LAN ENTRY · PILOMA IS OUTSIDE THE INTENDED K3S CLUSTER</text>
+<rect x="40" y="472" width="1520" height="668" rx="8" fill="#eef0f2" stroke="#c8ced7"/>
+<text x="64" y="502" font-family="sans-serif" font-size="13" font-weight="600" fill="#4f5d75">02 / K3S APPLICATION</text>
+<rect x="40" y="1172" width="1520" height="236" rx="8" fill="#eef0f2" stroke="#c8ced7"/>
+<text x="64" y="1202" font-family="sans-serif" font-size="13" font-weight="600" fill="#4f5d75">03 / PHYSICAL PLACEMENT · PROXMOX 192.168.0.20 · vmbr0 / 192.168.0.0/24</text>
+<path d="M344 240 H440" fill="none" stroke="#4f5d75" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#k3s-control)"/>
+<rect x="350" y="210" width="82" height="20" rx="2" fill="#f5f5f5" stroke="none"/>
+<text x="358" y="224" font-family="sans-serif" font-size="11" font-weight="500" fill="#4f5d75">DNS :53</text>
+<path d="M440 288 H344" fill="none" stroke="#4f5d75" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#k3s-control)"/>
+<rect x="348" y="308" width="90" height="20" rx="2" fill="#f5f5f5" stroke="none"/>
+<text x="356" y="322" font-family="sans-serif" font-size="11" font-weight="500" fill="#4f5d75">A RECORD</text>
+<path d="M208 324 V360 Q208 368 216 368 H1272 Q1280 368 1280 360 V324" fill="none" stroke="#2e5aa8" stroke-width="2"  marker-end="url(#k3s-http)"/>
+<rect x="816" y="338" width="208" height="20" rx="2" fill="#f5f5f5" stroke="none"/>
+<text x="824" y="352" font-family="sans-serif" font-size="11" font-weight="500" fill="#2e5aa8">HTTPS :443 · TO CADDY</text>
+<path d="M1488 324 V448 Q1488 456 1480 456 H424 Q416 456 416 464 V544" fill="none" stroke="#2e5aa8" stroke-width="2"  marker-end="url(#k3s-http)"/>
+<rect x="824" y="428" width="216" height="20" rx="2" fill="#f5f5f5" stroke="none"/>
+<text x="832" y="442" font-family="sans-serif" font-size="11" font-weight="500" fill="#2e5aa8">HTTP → NODEPORT 32041</text>
+<path d="M440 604 H568" fill="none" stroke="#2e5aa8" stroke-width="2"  marker-end="url(#k3s-http)"/>
+<rect x="452" y="574" width="100" height="20" rx="2" fill="#f5f5f5" stroke="none"/>
+<text x="460" y="588" font-family="sans-serif" font-size="11" font-weight="500" fill="#2e5aa8">SERVICE</text>
+<path d="M908 604 H1064" fill="none" stroke="#2e5aa8" stroke-width="2"  marker-end="url(#k3s-http)"/>
+<rect x="924" y="574" width="116" height="20" rx="2" fill="#f5f5f5" stroke="none"/>
+<text x="932" y="588" font-family="sans-serif" font-size="11" font-weight="500" fill="#2e5aa8">HTTP :8080</text>
+<path d="M248 784 V676" fill="none" stroke="#4f5d75" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#k3s-control)"/>
+<rect x="260" y="716" width="116" height="20" rx="2" fill="#f5f5f5" stroke="none"/>
+<text x="268" y="730" font-family="sans-serif" font-size="11" font-weight="500" fill="#4f5d75">HOST + PATH</text>
+<path d="M908 844 H976 a8 8 0 0 1 16 0 H1064" fill="none" stroke="#4f5d75" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#k3s-control)"/>
+<rect x="924" y="814" width="88" height="20" rx="2" fill="#f5f5f5" stroke="none"/>
+<text x="932" y="828" font-family="sans-serif" font-size="11" font-weight="500" fill="#4f5d75">OWNS</text>
+<path d="M1280 784 V676" fill="none" stroke="#4f5d75" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#k3s-control)"/>
+<rect x="1292" y="716" width="124" height="20" rx="2" fill="#f5f5f5" stroke="none"/>
+<text x="1300" y="730" font-family="sans-serif" font-size="11" font-weight="500" fill="#4f5d75">MAINTAINS 2</text>
+<path d="M480 1052 H568" fill="none" stroke="#426858" stroke-width="2"  marker-end="url(#k3s-config)"/>
+<rect x="484" y="1022" width="80" height="20" rx="2" fill="#f5f5f5" stroke="none"/>
+<text x="492" y="1036" font-family="sans-serif" font-size="11" font-weight="500" fill="#426858">PROJECT</text>
+<path d="M908 1040 H976 Q984 1040 984 1032 V700 Q984 692 992 692 H1104 Q1112 692 1112 684 V676" fill="none" stroke="#426858" stroke-width="2"  marker-end="url(#k3s-config)"/>
+<rect x="996" y="1112" width="312" height="20" rx="2" fill="#f5f5f5" stroke="none"/>
+<text x="1004" y="1126" font-family="sans-serif" font-size="11" font-weight="500" fill="#426858">READ-ONLY MOUNTS IN EACH POD</text>
+<rect x="72" y="212" width="272" height="112" rx="8" fill="#ffffff" stroke="#c8ced7"/>
+<text x="92" y="237" font-family="sans-serif" font-size="11" font-weight="600" fill="#4f5d75">CLIENT</text>
+<text x="92" y="266" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">LAN browser</text>
+<text x="92" y="292" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">glance.alomalab.internal</text>
+<text x="92" y="313" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Trusts Caddy CA for HTTPS</text>
+<rect x="440" y="212" width="360" height="112" rx="8" fill="#ffffff" stroke="#c8ced7"/>
+<text x="460" y="237" font-family="sans-serif" font-size="11" font-weight="600" fill="#4f5d75">DNS · PILOMA :53</text>
+<text x="460" y="266" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">Pi-hole</text>
+<text x="460" y="292" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Observed answer: 192.168.0.200</text>
+<text x="460" y="313" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Caddy route needs: 192.168.0.14</text>
+<rect x="1040" y="212" width="480" height="112" rx="8" fill="#fcf0e9" stroke="#eb6c36"/>
+<text x="1060" y="237" font-family="sans-serif" font-size="11" font-weight="600" fill="#a9471d">HTTPS EDGE · PILOMA 192.168.0.14</text>
+<text x="1060" y="266" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">Caddy</text>
+<text x="1060" y="292" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">tls internal · Host header preserved</text>
+<text x="1060" y="313" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">upstream http://192.168.0.200:32041</text>
+<text x="72" y="408" font-family="sans-serif" font-size="14" font-weight="500" fill="#984316">DNS discrepancy: normal resolution currently bypasses Caddy. The HTTPS route shown works when the client targets Piloma.</text>
+<text x="80" y="526" font-family="sans-serif" font-size="13" font-weight="600" fill="#4f5d75">kube-system</text>
+<text x="568" y="526" font-family="sans-serif" font-size="13" font-weight="600" fill="#4f5d75">namespace: glance-dashboard</text>
+<rect x="80" y="544" width="360" height="132" rx="8" fill="#fcf0e9" stroke="#eb6c36"/>
+<text x="100" y="569" font-family="sans-serif" font-size="11" font-weight="600" fill="#a9471d">INGRESS CONTROLLER + SERVICE</text>
+<text x="100" y="598" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">Traefik</text>
+<text x="100" y="624" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">LoadBalancer · HTTP 80 → 32041</text>
+<text x="100" y="645" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">HTTPS 443 → 30929 (not this route)</text>
+<text x="100" y="666" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Advertised nodes: .200 / .201 / .202</text>
+<rect x="568" y="544" width="340" height="132" rx="8" fill="#ffffff" stroke="#c8ced7"/>
+<text x="588" y="569" font-family="sans-serif" font-size="11" font-weight="600" fill="#4f5d75">SERVICE · glance</text>
+<text x="588" y="598" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">Stable backend selection</text>
+<text x="588" y="624" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">ClusterIP 10.43.186.125:8080</text>
+<text x="588" y="645" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">selector: app=glance-dashboard</text>
+<text x="588" y="666" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">targetPort: http → 8080</text>
+<rect x="1064" y="544" width="432" height="132" rx="8" fill="#ffffff" stroke="#c8ced7"/>
+<text x="1084" y="569" font-family="sans-serif" font-size="11" font-weight="600" fill="#4f5d75">PODS · 2/2 READY · glanceapp/glance</text>
+<text x="1084" y="598" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">Two Glance replicas</text>
+<text x="1084" y="624" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">10.42.0.26 · k3s-cp-01</text>
+<text x="1084" y="645" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">10.42.2.5 · k3s-worker-02</text>
+<text x="1084" y="666" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Each listens on named port http:8080</text>
+<rect x="80" y="784" width="360" height="132" rx="8" fill="#ffffff" stroke="#c8ced7"/>
+<text x="100" y="809" font-family="sans-serif" font-size="11" font-weight="600" fill="#4f5d75">INGRESS · glance</text>
+<text x="100" y="838" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">Hostname and path rules</text>
+<text x="100" y="864" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">class: traefik · path: / (Prefix)</text>
+<text x="100" y="885" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">host: glance.alomalab.internal</text>
+<text x="100" y="906" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">backend: glance:8080</text>
+<rect x="568" y="784" width="340" height="132" rx="8" fill="#ffffff" stroke="#c8ced7"/>
+<text x="588" y="809" font-family="sans-serif" font-size="11" font-weight="600" fill="#4f5d75">DEPLOYMENT · glance-dashboard</text>
+<text x="588" y="838" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">Desired application state</text>
+<text x="588" y="864" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">replicas: 2</text>
+<text x="588" y="885" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Pod label: app=glance-dashboard</text>
+<text x="588" y="906" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">No declared placement constraints</text>
+<rect x="1064" y="784" width="432" height="132" rx="8" fill="#ffffff" stroke="#c8ced7"/>
+<text x="1084" y="809" font-family="sans-serif" font-size="11" font-weight="600" fill="#4f5d75">REPLICASET · GENERATED CONTROLLER</text>
+<text x="1084" y="838" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">Replica lifecycle</text>
+<text x="1084" y="864" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">glance-dashboard-6c9bb6d48d</text>
+<text x="1084" y="885" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Creates / replaces the two Pods</text>
+<text x="1084" y="906" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Management relationship; no HTTP hop</text>
+<rect x="80" y="972" width="400" height="132" rx="8" fill="#ffffff" stroke="#c8ced7"/>
+<text x="100" y="997" font-family="sans-serif" font-size="11" font-weight="600" fill="#4f5d75">CONFIGMAPS · SHARED CONFIGURATION</text>
+<text x="100" y="1026" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">Configuration + CSS</text>
+<text x="100" y="1052" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">glance-config: glance.yml, home.yml</text>
+<text x="100" y="1073" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">glance-assets: user.css</text>
+<text x="100" y="1094" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Same configuration supplied to both Pods</text>
+<rect x="568" y="972" width="340" height="132" rx="8" fill="#ffffff" stroke="#c8ced7"/>
+<text x="588" y="997" font-family="sans-serif" font-size="11" font-weight="600" fill="#4f5d75">POD VOLUMES · CONFIGMAP SOURCES</text>
+<text x="588" y="1026" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">Mounted configuration files</text>
+<text x="588" y="1052" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">config → /app/config</text>
+<text x="588" y="1073" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">assets → /app/assets</text>
+<text x="588" y="1094" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">readOnly: true · no PVC</text>
+<text x="1064" y="984" font-family="sans-serif" font-size="16" font-weight="600" fill="#2d3142">How to read this view</text>
+<text x="1064" y="1008" font-family="sans-serif" font-size="14" font-weight="400" fill="#4f5d75">Service routing is logical: Traefik may use</text>
+<text x="1064" y="1030" font-family="sans-serif" font-size="14" font-weight="400" fill="#4f5d75">Pod endpoints directly, not the ClusterIP.</text>
+<text x="1064" y="1080" font-family="sans-serif" font-size="14" font-weight="400" fill="#4f5d75">ConfigMaps supply files; they are not disks.</text>
+<text x="1064" y="1102" font-family="sans-serif" font-size="14" font-weight="400" fill="#4f5d75">Glance serves CSS at /assets/user.css.</text>
+<rect x="72" y="1224" width="432" height="116" rx="8" fill="#ffffff" stroke="#c8ced7"/>
+<text x="92" y="1249" font-family="sans-serif" font-size="11" font-weight="600" fill="#4f5d75">SERVER · VMID 20100</text>
+<text x="92" y="1278" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">k3s-cp-01 · 192.168.0.200</text>
+<text x="92" y="1304" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Ready · Kubernetes API :6443</text>
+<text x="92" y="1325" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">One Glance Pod observed here</text>
+<rect x="584" y="1224" width="432" height="116" rx="8" fill="#ffffff" stroke="#c8ced7"/>
+<text x="604" y="1249" font-family="sans-serif" font-size="11" font-weight="600" fill="#4f5d75">AGENT · VMID 20101</text>
+<text x="604" y="1278" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">k3s-worker-01 · 192.168.0.201</text>
+<text x="604" y="1304" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Ready · K3s v1.36.3+k3s1</text>
+<text x="604" y="1325" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Placement is scheduler-controlled</text>
+<rect x="1096" y="1224" width="432" height="116" rx="8" fill="#ffffff" stroke="#c8ced7"/>
+<text x="1116" y="1249" font-family="sans-serif" font-size="11" font-weight="600" fill="#4f5d75">AGENT · VMID 20102</text>
+<text x="1116" y="1278" font-family="sans-serif" font-size="20" font-weight="600" fill="#2d3142">k3s-worker-02 · 192.168.0.202</text>
+<text x="1116" y="1304" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Ready · K3s v1.36.3+k3s1</text>
+<text x="1116" y="1325" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">One Glance Pod observed here</text>
+<text x="72" y="1378" font-family="sans-serif" font-size="14" font-weight="400" fill="#4f5d75">Platform: CoreDNS · metrics-server · local-path provisioner (unused by Glance) · Argo CD installed, no Applications observed.</text>
+<path d="M40 1440 H1560" stroke="#c8ced7"/>
+<path d="M48 1468 H100" fill="none" stroke="#2e5aa8" stroke-width="2"  marker-end="url(#k3s-http)"/>
+<text x="112" y="1473" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">HTTP / HTTPS request</text>
+<path d="M388 1468 H440" fill="none" stroke="#4f5d75" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#k3s-control)"/>
+<text x="452" y="1473" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">DNS / control relationship</text>
+<path d="M796 1468 H848" fill="none" stroke="#426858" stroke-width="2"  marker-end="url(#k3s-config)"/>
+<text x="860" y="1473" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Configuration projection</text>
+<text x="1192" y="1473" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">IPs and placement are a snapshot.</text>
+<text x="40" y="1512" font-family="sans-serif" font-size="13" font-weight="400" fill="#4f5d75">Observed drift: retired pi-worker-1 remains NotReady · Glance Caddy block sits inside Jellyfin’s managed markers · see architecture.md.</text>
+</svg><aside><h2>Evidence and scope</h2><p>Read-only snapshot: 2026-09-18, approximately 10:23 UTC. Based on the Glance manifests, Ansible inventory, live Kubernetes resources, Piloma’s Caddyfile and Pi-hole DNS. Uses the existing homelab architecture JSON as the infrastructure reference and the existing light diagram palette. This engineer-focused, fit-sized SVG expands application routing; NAS, Jellyfin storage and the unused SDN remain in the original homelab overview.</p><p>Traefik returned HTTP 200; Caddy returned HTTP/2 200 with a forced hostname and diagnostic certificate verification bypass. Normal curl on Piloma did not trust the Caddy CA. Pi-hole still resolved Glance to .200, so the Caddy route requires correcting DNS to .14 or a client override. No infrastructure changes were made.</p><p>The live Caddy Glance block is inside Jellyfin’s managed markers. The legacy catch-all still targets 127.0.0.1:32759 with no observed listener. The Pi node record is NotReady, outside the intended three-VM cluster. These are documented discrepancies, not implied fixes.</p><p>DNS is distinct from web traffic. Ingress configures Traefik; Deployment and ReplicaSet manage Pods. The Service shows the logical backend relationship, not a guarantee that packets traverse its virtual IP. ConfigMaps become separate read-only volume projections in each Pod. Pod IPs, ReplicaSet name and placement can change.</p><p><a href="../architecture.md">Architecture and evidence</a> · <a href="../../kube/glance-dashboard/README.md">Glance runbook</a> · <a href="k3s-architecture.svg">Standalone SVG</a></p><p>Authoring source: this HTML. Extract its single SVG to reproduce the vector artifact. System sans/serif fonts are intentional for offline rendering; appearance varies slightly with installed fonts. No external assets or scripts are required.</p></aside></main></body></html>

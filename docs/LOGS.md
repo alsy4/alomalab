@@ -1,5 +1,16 @@
 # Implementation log
 
+[2026-09-18 10:23 UTC] - Verified the Caddy-to-K3s Glance route and documented the workload
+
+Read-only inspection confirmed the live Glance Caddy site on Piloma forwarding
+to Traefik at `192.168.0.200:32041`, two healthy Glance replicas, the host-based
+Ingress, ClusterIP Service, and ConfigMap-backed configuration/assets volumes.
+Added the detailed K3s SVG and Glance runbook, and updated the architecture,
+repository structure, root README, and Ansible notes. Recorded DNS bypassing
+Caddy, the retired NotReady Pi node, the obsolete local proxy fallback, and
+Glance inside Jellyfin's managed Caddy markers. No infrastructure was changed;
+this entry records direct observations, not an inferred deployment commit.
+
 [2026-09-16 14:26 UTC] - Removed Piloma from the K3s cluster
 
 The Raspberry Pi formerly identified as `pi-worker-01` is no longer a

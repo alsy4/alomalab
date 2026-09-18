@@ -25,9 +25,10 @@ endpoint. The declared cluster inventory is:
 | `agent` | `k3s-worker-01` | `192.168.0.201` | Terraform VM |
 | `agent` | `k3s-worker-02` | `192.168.0.202` | Terraform VM |
 
-Piloma (`192.168.0.14`) is not a Kubernetes node. It remains solely in the
+Piloma (`192.168.0.14`) is outside the intended Kubernetes topology. It remains in the
 `reverse_proxy` group so Caddy can own the host's HTTP and HTTPS entry points.
-The K3s playbook targets only the three Proxmox VMs listed above.
+The K3s playbook targets only the three Proxmox VMs listed above. A live
+inspection on 2026-09-18 found a retired `pi-worker-1` record still NotReady.
 
 `playbooks/k3s/update-debian.yml` currently targets a `k3s_nodes` group that is
 not present in the inventory. Ansible therefore warns and selects no hosts.
@@ -149,3 +150,19 @@ ansible-playbook -i ansible/inventory/homelab.yml \
 
 This refreshes APT metadata, performs a distribution upgrade, removes unused
 packages, and cleans the package cache for the `debian_lxc` group.
+
+## Glance, Pi-hole and Caddy ownership
+
+Glance is deployed separately using [Kubernetes manifests](../kube/glance-dashboard/README.md).
+Caddy and Pi-hole both run on Piloma. Glance's HTTPS site forwards to
+`http://192.168.0.200:32041` (Traefik's observed HTTP NodePort), preserving
+`glance.alomalab.internal` for the Ingress host match. Its local DNS record
+must point to Piloma `192.168.0.14`; inspection still returned `192.168.0.200`.
+
+The live Glance block was found **inside the Jellyfin Ansible-managed markers**.
+Move the Glance block outside those markers before rerunning
+`setup-jellyfin.yml`: its `blockinfile` task replaces that whole region with
+only the Jellyfin site. The playbook does not manage Glance, Pi-hole DNS,
+Caddy CA distribution, or the legacy `127.0.0.1:32759` HTTP fallback.
+
+See [architecture evidence and discrepancies](../docs/architecture.md#current-operational-discrepancies).

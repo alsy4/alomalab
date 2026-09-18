@@ -1,0 +1,449 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" version="26.0.0" agent="drawio-skill" compressed="false">
+  <diagram id="k3s-current" name="K3s architecture">
+    <mxGraphModel dx="1600" dy="1540" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1540" background="#f5f5f5">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="lan" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=3;fillColor=#eef0f2;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="156" width="1520" height="284" />
+        </mxCell>
+        <mxCell id="cluster" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=3;fillColor=#eef0f2;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="472" width="1520" height="668" />
+        </mxCell>
+        <mxCell id="hosts" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=3;fillColor=#eef0f2;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="1172" width="1520" height="236" />
+        </mxCell>
+        <mxCell id="browser" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="lan" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="browser">
+          <mxGeometry as="geometry" x="32" y="56" width="272.0" height="112.0" />
+        </mxCell>
+        <mxCell id="browser-text-0" value="CLIENT" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="browser">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="232.0" height="18.0" />
+        </mxCell>
+        <mxCell id="browser-text-1" value="LAN browser" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="browser">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="232.0" height="25" />
+        </mxCell>
+        <mxCell id="browser-text-2" value="glance.alomalab.internal" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="browser">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="232.0" height="20.0" />
+        </mxCell>
+        <mxCell id="browser-text-3" value="Trusts Caddy CA for HTTPS" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="browser">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="232.0" height="20.0" />
+        </mxCell>
+        <mxCell id="pihole" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="lan" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="pihole">
+          <mxGeometry as="geometry" x="400" y="56" width="360.0" height="112.0" />
+        </mxCell>
+        <mxCell id="pihole-text-0" value="DNS · PILOMA :53" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="pihole">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="320.0" height="18.0" />
+        </mxCell>
+        <mxCell id="pihole-text-1" value="Pi-hole" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="pihole">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="320.0" height="25" />
+        </mxCell>
+        <mxCell id="pihole-text-2" value="Observed answer: 192.168.0.200" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="pihole">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="320.0" height="20.0" />
+        </mxCell>
+        <mxCell id="pihole-text-3" value="Caddy route needs: 192.168.0.14" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="pihole">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="320.0" height="20.0" />
+        </mxCell>
+        <mxCell id="caddy" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#fcf0e9;strokeColor=#eb6c36;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="lan" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="caddy">
+          <mxGeometry as="geometry" x="1000" y="56" width="480.0" height="112.0" />
+        </mxCell>
+        <mxCell id="caddy-text-0" value="HTTPS EDGE · PILOMA 192.168.0.14" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#a9471d;spacing=0;" vertex="1" parent="caddy">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="440.0" height="18.0" />
+        </mxCell>
+        <mxCell id="caddy-text-1" value="Caddy" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="caddy">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="440.0" height="25" />
+        </mxCell>
+        <mxCell id="caddy-text-2" value="tls internal · Host header preserved" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="caddy">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="440.0" height="20.0" />
+        </mxCell>
+        <mxCell id="caddy-text-3" value="upstream http://192.168.0.200:32041" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="caddy">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="440.0" height="20.0" />
+        </mxCell>
+        <mxCell id="traefik" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#fcf0e9;strokeColor=#eb6c36;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="cluster" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="traefik">
+          <mxGeometry as="geometry" x="40" y="72" width="360.0" height="132.0" />
+        </mxCell>
+        <mxCell id="traefik-text-0" value="TRAEFIK · CONTROLLER + LB SERVICE" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#a9471d;spacing=0;" vertex="1" parent="traefik">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="264.0" height="18.0" />
+        </mxCell>
+        <mxCell id="traefik-text-1" value="Traefik" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="traefik">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="264.0" height="25" />
+        </mxCell>
+        <mxCell id="traefik-text-2" value="LoadBalancer · HTTP 80 → 32041" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="traefik">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="320.0" height="20.0" />
+        </mxCell>
+        <mxCell id="traefik-text-3" value="HTTPS 443 → 30929 (not this route)" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="traefik">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="320.0" height="20.0" />
+        </mxCell>
+        <mxCell id="traefik-text-4" value="Advertised nodes: .200 / .201 / .202" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="traefik">
+          <mxGeometry as="geometry" x="20.0" y="107.0" width="320.0" height="20.0" />
+        </mxCell>
+        <mxCell id="traefik-icon" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;kubernetesLabel=1;prIcon=ing;connectable=0;" vertex="1" parent="traefik">
+          <mxGeometry as="geometry" x="294.0" y="12" width="50" height="48" />
+        </mxCell>
+        <mxCell id="service" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="cluster" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="service">
+          <mxGeometry as="geometry" x="528" y="72" width="340.0" height="132.0" />
+        </mxCell>
+        <mxCell id="service-text-0" value="SERVICE · glance" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="service">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="244.0" height="18.0" />
+        </mxCell>
+        <mxCell id="service-text-1" value="glance · ClusterIP" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="service">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="244.0" height="25" />
+        </mxCell>
+        <mxCell id="service-text-2" value="ClusterIP 10.43.186.125:8080" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="service">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="300.0" height="20.0" />
+        </mxCell>
+        <mxCell id="service-text-3" value="selector: app=glance-dashboard" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="service">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="300.0" height="20.0" />
+        </mxCell>
+        <mxCell id="service-text-4" value="targetPort: http → 8080" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="service">
+          <mxGeometry as="geometry" x="20.0" y="107.0" width="300.0" height="20.0" />
+        </mxCell>
+        <mxCell id="service-icon" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;kubernetesLabel=1;prIcon=svc;connectable=0;" vertex="1" parent="service">
+          <mxGeometry as="geometry" x="274.0" y="12" width="50" height="48" />
+        </mxCell>
+        <mxCell id="pods" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="cluster" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="pods">
+          <mxGeometry as="geometry" x="1024" y="72" width="432.0" height="132.0" />
+        </mxCell>
+        <mxCell id="pods-text-0" value="PODS · 2/2 READY" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="pods">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="336.0" height="18.0" />
+        </mxCell>
+        <mxCell id="pods-text-1" value="Two Glance replicas" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="pods">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="336.0" height="25" />
+        </mxCell>
+        <mxCell id="pods-text-2" value="10.42.0.26 · k3s-cp-01" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="pods">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="392.0" height="20.0" />
+        </mxCell>
+        <mxCell id="pods-text-3" value="10.42.2.5 · k3s-worker-02" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="pods">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="392.0" height="20.0" />
+        </mxCell>
+        <mxCell id="pods-text-4" value="Each listens on named port http:8080" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="pods">
+          <mxGeometry as="geometry" x="20.0" y="107.0" width="392.0" height="20.0" />
+        </mxCell>
+        <mxCell id="pods-icon" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;kubernetesLabel=1;prIcon=pod;connectable=0;" vertex="1" parent="pods">
+          <mxGeometry as="geometry" x="366.0" y="12" width="50" height="48" />
+        </mxCell>
+        <mxCell id="ingress" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="cluster" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="ingress">
+          <mxGeometry as="geometry" x="40" y="312" width="360.0" height="132.0" />
+        </mxCell>
+        <mxCell id="ingress-text-0" value="INGRESS · glance" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="ingress">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="264.0" height="18.0" />
+        </mxCell>
+        <mxCell id="ingress-text-1" value="Host + path rules" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="ingress">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="264.0" height="25" />
+        </mxCell>
+        <mxCell id="ingress-text-2" value="class: traefik · path: / (Prefix)" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="ingress">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="320.0" height="20.0" />
+        </mxCell>
+        <mxCell id="ingress-text-3" value="host: glance.alomalab.internal" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="ingress">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="320.0" height="20.0" />
+        </mxCell>
+        <mxCell id="ingress-text-4" value="backend: glance:8080" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="ingress">
+          <mxGeometry as="geometry" x="20.0" y="107.0" width="320.0" height="20.0" />
+        </mxCell>
+        <mxCell id="ingress-icon" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;kubernetesLabel=1;prIcon=ing;connectable=0;" vertex="1" parent="ingress">
+          <mxGeometry as="geometry" x="294.0" y="12" width="50" height="48" />
+        </mxCell>
+        <mxCell id="deployment" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="cluster" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="deployment">
+          <mxGeometry as="geometry" x="528" y="312" width="340.0" height="132.0" />
+        </mxCell>
+        <mxCell id="deployment-text-0" value="DEPLOYMENT" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="deployment">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="244.0" height="18.0" />
+        </mxCell>
+        <mxCell id="deployment-text-1" value="glance-dashboard" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="deployment">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="244.0" height="25" />
+        </mxCell>
+        <mxCell id="deployment-text-2" value="replicas: 2" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="deployment">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="300.0" height="20.0" />
+        </mxCell>
+        <mxCell id="deployment-text-3" value="Pod label: app=glance-dashboard" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="deployment">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="300.0" height="20.0" />
+        </mxCell>
+        <mxCell id="deployment-text-4" value="No declared placement constraints" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="deployment">
+          <mxGeometry as="geometry" x="20.0" y="107.0" width="300.0" height="20.0" />
+        </mxCell>
+        <mxCell id="deployment-icon" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;kubernetesLabel=1;prIcon=deploy;connectable=0;" vertex="1" parent="deployment">
+          <mxGeometry as="geometry" x="274.0" y="12" width="50" height="48" />
+        </mxCell>
+        <mxCell id="replicaset" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="cluster" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="replicaset">
+          <mxGeometry as="geometry" x="1024" y="312" width="432.0" height="132.0" />
+        </mxCell>
+        <mxCell id="replicaset-text-0" value="REPLICASET" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="replicaset">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="336.0" height="18.0" />
+        </mxCell>
+        <mxCell id="replicaset-text-1" value="Replica lifecycle" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="replicaset">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="336.0" height="25" />
+        </mxCell>
+        <mxCell id="replicaset-text-2" value="glance-dashboard-6c9bb6d48d" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="replicaset">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="392.0" height="20.0" />
+        </mxCell>
+        <mxCell id="replicaset-text-3" value="Creates / replaces the two Pods" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="replicaset">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="392.0" height="20.0" />
+        </mxCell>
+        <mxCell id="replicaset-text-4" value="Management relationship; no HTTP hop" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="replicaset">
+          <mxGeometry as="geometry" x="20.0" y="107.0" width="392.0" height="20.0" />
+        </mxCell>
+        <mxCell id="replicaset-icon" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;kubernetesLabel=1;prIcon=rs;connectable=0;" vertex="1" parent="replicaset">
+          <mxGeometry as="geometry" x="366.0" y="12" width="50" height="48" />
+        </mxCell>
+        <mxCell id="configmaps" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="cluster" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="configmaps">
+          <mxGeometry as="geometry" x="40" y="500" width="400.0" height="132.0" />
+        </mxCell>
+        <mxCell id="configmaps-text-0" value="CONFIGMAPS" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="configmaps">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="304.0" height="18.0" />
+        </mxCell>
+        <mxCell id="configmaps-text-1" value="Configuration + CSS" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="configmaps">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="304.0" height="25" />
+        </mxCell>
+        <mxCell id="configmaps-text-2" value="glance-config: glance.yml, home.yml" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="configmaps">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="360.0" height="20.0" />
+        </mxCell>
+        <mxCell id="configmaps-text-3" value="glance-assets: user.css" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="configmaps">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="360.0" height="20.0" />
+        </mxCell>
+        <mxCell id="configmaps-text-4" value="Same configuration supplied to both Pods" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="configmaps">
+          <mxGeometry as="geometry" x="20.0" y="107.0" width="360.0" height="20.0" />
+        </mxCell>
+        <mxCell id="configmaps-icon" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;kubernetesLabel=1;prIcon=cm;connectable=0;" vertex="1" parent="configmaps">
+          <mxGeometry as="geometry" x="334.0" y="12" width="50" height="48" />
+        </mxCell>
+        <mxCell id="volumes" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="cluster" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="volumes">
+          <mxGeometry as="geometry" x="528" y="500" width="340.0" height="132.0" />
+        </mxCell>
+        <mxCell id="volumes-text-0" value="CONFIGMAP VOLUMES" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="volumes">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="244.0" height="18.0" />
+        </mxCell>
+        <mxCell id="volumes-text-1" value="Read-only files" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="volumes">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="244.0" height="25" />
+        </mxCell>
+        <mxCell id="volumes-text-2" value="config → /app/config" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="volumes">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="300.0" height="20.0" />
+        </mxCell>
+        <mxCell id="volumes-text-3" value="assets → /app/assets" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="volumes">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="300.0" height="20.0" />
+        </mxCell>
+        <mxCell id="volumes-text-4" value="readOnly: true · no PVC" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="volumes">
+          <mxGeometry as="geometry" x="20.0" y="107.0" width="300.0" height="20.0" />
+        </mxCell>
+        <mxCell id="volumes-icon" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;kubernetesLabel=1;prIcon=vol;connectable=0;" vertex="1" parent="volumes">
+          <mxGeometry as="geometry" x="274.0" y="12" width="50" height="48" />
+        </mxCell>
+        <mxCell id="cp" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="hosts" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="cp">
+          <mxGeometry as="geometry" x="32" y="52" width="432.0" height="116.0" />
+        </mxCell>
+        <mxCell id="cp-text-0" value="CONTROL PLANE · VMID 20100" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="cp">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="336.0" height="18.0" />
+        </mxCell>
+        <mxCell id="cp-text-1" value="k3s-cp-01" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="cp">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="336.0" height="25" />
+        </mxCell>
+        <mxCell id="cp-text-2" value="192.168.0.200 · Ready · API :6443" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="cp">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="392.0" height="20.0" />
+        </mxCell>
+        <mxCell id="cp-text-3" value="One Glance Pod observed here" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="cp">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="392.0" height="20.0" />
+        </mxCell>
+        <mxCell id="cp-icon" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;kubernetesLabel=1;prIcon=control_plane;connectable=0;" vertex="1" parent="cp">
+          <mxGeometry as="geometry" x="366.0" y="12" width="50" height="48" />
+        </mxCell>
+        <mxCell id="worker1" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="hosts" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="worker1">
+          <mxGeometry as="geometry" x="544" y="52" width="432.0" height="116.0" />
+        </mxCell>
+        <mxCell id="worker1-text-0" value="NODE · VMID 20101" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="worker1">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="336.0" height="18.0" />
+        </mxCell>
+        <mxCell id="worker1-text-1" value="k3s-worker-01" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="worker1">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="336.0" height="25" />
+        </mxCell>
+        <mxCell id="worker1-text-2" value="192.168.0.201 · Ready · v1.36.3+k3s1" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="worker1">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="392.0" height="20.0" />
+        </mxCell>
+        <mxCell id="worker1-text-3" value="Placement is scheduler-controlled" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="worker1">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="392.0" height="20.0" />
+        </mxCell>
+        <mxCell id="worker1-icon" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;kubernetesLabel=1;prIcon=node;connectable=0;" vertex="1" parent="worker1">
+          <mxGeometry as="geometry" x="366.0" y="12" width="50" height="48" />
+        </mxCell>
+        <mxCell id="worker2" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;rounded=1;arcSize=6;fillColor=#ffffff;strokeColor=#c8ced7;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="hosts" data-source="docs/architecture-diagram/k3s-architecture.html" data-model-id="worker2">
+          <mxGeometry as="geometry" x="1056" y="52" width="432.0" height="116.0" />
+        </mxCell>
+        <mxCell id="worker2-text-0" value="NODE · VMID 20102" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="worker2">
+          <mxGeometry as="geometry" x="20.0" y="12.0" width="336.0" height="18.0" />
+        </mxCell>
+        <mxCell id="worker2-text-1" value="k3s-worker-02" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="worker2">
+          <mxGeometry as="geometry" x="20.0" y="34.0" width="336.0" height="25" />
+        </mxCell>
+        <mxCell id="worker2-text-2" value="192.168.0.202 · Ready · v1.36.3+k3s1" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="worker2">
+          <mxGeometry as="geometry" x="20.0" y="65.0" width="392.0" height="20.0" />
+        </mxCell>
+        <mxCell id="worker2-text-3" value="One Glance Pod observed here" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="worker2">
+          <mxGeometry as="geometry" x="20.0" y="86.0" width="392.0" height="20.0" />
+        </mxCell>
+        <mxCell id="worker2-icon" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;kubernetesLabel=1;prIcon=node;connectable=0;" vertex="1" parent="worker2">
+          <mxGeometry as="geometry" x="366.0" y="12" width="50" height="48" />
+        </mxCell>
+        <mxCell id="annotation-4" value="ALOMALAB / CURRENT KUBERNETES ARCHITECTURE" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40.0" y="31.0" width="311.21999999999997" height="21.0" />
+        </mxCell>
+        <mxCell id="annotation-5" value="From a hostname to two running dashboards" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=38.0;fontStyle=0;fontColor=#2d3142;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40.0" y="54.0" width="888.06" height="46.0" />
+        </mxCell>
+        <mxCell id="annotation-6" value="Glance • Pi-hole + Caddy on Piloma • Traefik on K3s • read-only verification: 18 September 2026" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=16.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40.0" y="108.0" width="866.4" height="24.0" />
+        </mxCell>
+        <mxCell id="annotation-8" value="01 / LAN ENTRY · PILOMA IS OUTSIDE THE INTENDED K3S CLUSTER" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="lan">
+          <mxGeometry as="geometry" x="24.0" y="17.0" width="437.18999999999994" height="21.0" />
+        </mxCell>
+        <mxCell id="annotation-10" value="02 / K3S APPLICATION" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="24.0" y="17.0" width="148.2" height="21.0" />
+        </mxCell>
+        <mxCell id="annotation-12" value="03 / PHYSICAL PLACEMENT · PROXMOX 192.168.0.20 · vmbr0 / 192.168.0.0/24" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="hosts">
+          <mxGeometry as="geometry" x="24.0" y="17.0" width="526.1099999999999" height="21.0" />
+        </mxCell>
+        <mxCell id="annotation-15" value="DNS :53" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="lan">
+          <mxGeometry as="geometry" x="318.0" y="57.0" width="43.88999999999999" height="19.0" />
+        </mxCell>
+        <mxCell id="annotation-18" value="A RECORD" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="lan">
+          <mxGeometry as="geometry" x="316.0" y="155.0" width="50.16" height="19.0" />
+        </mxCell>
+        <mxCell id="annotation-21" value="HTTPS :443 · TO CADDY" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=0;fontColor=#2e5aa8;spacing=0;" vertex="1" parent="lan">
+          <mxGeometry as="geometry" x="784.0" y="185.0" width="131.67" height="19.0" />
+        </mxCell>
+        <mxCell id="annotation-24" value="HTTP → NODEPORT 32041" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=0;fontColor=#2e5aa8;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="832.0" y="431.0" width="131.67" height="19.0" />
+        </mxCell>
+        <mxCell id="annotation-27" value="SERVICE" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=0;fontColor=#2e5aa8;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="420.0" y="105.0" width="43.88999999999999" height="19.0" />
+        </mxCell>
+        <mxCell id="annotation-30" value="HTTP :8080" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=0;fontColor=#2e5aa8;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="892.0" y="105.0" width="62.699999999999996" height="19.0" />
+        </mxCell>
+        <mxCell id="annotation-33" value="HOST + PATH" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="228.0" y="247.0" width="68.97" height="19.0" />
+        </mxCell>
+        <mxCell id="annotation-36" value="OWNS" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="892.0" y="345.0" width="40" height="19.0" />
+        </mxCell>
+        <mxCell id="annotation-39" value="MAINTAINS 2" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="1260.0" y="247.0" width="68.97" height="19.0" />
+        </mxCell>
+        <mxCell id="annotation-42" value="PROJECT" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=0;fontColor=#426858;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="452.0" y="553.0" width="43.88999999999999" height="19.0" />
+        </mxCell>
+        <mxCell id="annotation-45" value="READ-ONLY MOUNTS IN EACH POD" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=11.0;fontStyle=0;fontColor=#426858;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="964.0" y="643.0" width="175.55999999999997" height="19.0" />
+        </mxCell>
+        <mxCell id="annotation-61" value="DNS discrepancy: normal resolution currently bypasses Caddy. The HTTPS route shown works when the client targets Piloma." style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=14.0;fontStyle=0;fontColor=#984316;spacing=0;" vertex="1" parent="lan">
+          <mxGeometry as="geometry" x="32.0" y="238.0" width="957.5999999999999" height="22.0" />
+        </mxCell>
+        <mxCell id="annotation-62" value="kube-system" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="40.0" y="41.0" width="81.50999999999999" height="21.0" />
+        </mxCell>
+        <mxCell id="annotation-63" value="namespace: glance-dashboard" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=1;fontColor=#4f5d75;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="528.0" y="41.0" width="200.07" height="21.0" />
+        </mxCell>
+        <mxCell id="annotation-112" value="How to read this view" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=16.0;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="1024.0" y="496.0" width="191.51999999999998" height="24.0" />
+        </mxCell>
+        <mxCell id="annotation-113" value="Service routing is logical: Traefik may use" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=14.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="1024.0" y="522.0" width="343.14" height="22.0" />
+        </mxCell>
+        <mxCell id="annotation-114" value="Pod endpoints directly, not the ClusterIP." style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=14.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="1024.0" y="544.0" width="335.15999999999997" height="22.0" />
+        </mxCell>
+        <mxCell id="annotation-115" value="ConfigMaps supply files; they are not disks." style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=14.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="1024.0" y="594.0" width="351.11999999999995" height="22.0" />
+        </mxCell>
+        <mxCell id="annotation-116" value="Glance serves CSS at /assets/user.css." style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=14.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="cluster">
+          <mxGeometry as="geometry" x="1024.0" y="616.0" width="303.23999999999995" height="22.0" />
+        </mxCell>
+        <mxCell id="annotation-132" value="Platform: CoreDNS · metrics-server · local-path provisioner (unused by Glance) · Argo CD installed, no Applications observed." style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=14.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="hosts">
+          <mxGeometry as="geometry" x="32.0" y="192.0" width="997.4999999999999" height="22.0" />
+        </mxCell>
+        <mxCell id="annotation-135" value="HTTP / HTTPS request" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="112.0" y="1460.0" width="148.2" height="21.0" />
+        </mxCell>
+        <mxCell id="annotation-137" value="DNS / control relationship" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="452.0" y="1460.0" width="192.66" height="21.0" />
+        </mxCell>
+        <mxCell id="annotation-139" value="Configuration projection" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="860.0" y="1460.0" width="177.83999999999997" height="21.0" />
+        </mxCell>
+        <mxCell id="annotation-140" value="IPs and placement are a snapshot." style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1192.0" y="1460.0" width="244.52999999999997" height="21.0" />
+        </mxCell>
+        <mxCell id="annotation-141" value="Observed drift: retired pi-worker-1 remains NotReady · Glance Caddy block sits inside Jellyfin’s managed markers · see architecture.md." style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40.0" y="1499.0" width="1000.3499999999999" height="21.0" />
+        </mxCell>
+        <mxCell id="dns-query" value="" style="html=1;edgeStyle=none;rounded=1;strokeColor=#4f5d75;strokeWidth=2;endArrow=block;endFill=1;endSize=8;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.25;entryX=0;entryY=0.25;exitPerimeter=0;entryPerimeter=0;dashed=1;dashPattern=7 5;" edge="1" parent="1" source="browser" target="pihole">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="dns-answer" value="" style="html=1;edgeStyle=none;rounded=1;strokeColor=#4f5d75;strokeWidth=2;endArrow=block;endFill=1;endSize=8;jumpStyle=arc;jumpSize=10;exitX=0;exitY=0.6785714285714286;entryX=1;entryY=0.6785714285714286;exitPerimeter=0;entryPerimeter=0;dashed=1;dashPattern=7 5;" edge="1" parent="1" source="pihole" target="browser">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="https" value="" style="html=1;edgeStyle=none;rounded=1;strokeColor=#2e5aa8;strokeWidth=2;endArrow=block;endFill=1;endSize=8;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=1;exitPerimeter=0;entryPerimeter=0;" edge="1" parent="1" source="browser" target="caddy">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="208" y="368" />
+              <mxPoint x="1280" y="368" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="upstream" value="" style="html=1;edgeStyle=none;rounded=1;strokeColor=#2e5aa8;strokeWidth=2;endArrow=block;endFill=1;endSize=8;jumpStyle=arc;jumpSize=10;exitX=0.9333333333333333;exitY=1;entryX=0.9333333333333333;entryY=0;exitPerimeter=0;entryPerimeter=0;" edge="1" parent="1" source="caddy" target="traefik">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1488" y="456" />
+              <mxPoint x="416" y="456" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="route-service" value="" style="html=1;edgeStyle=none;rounded=1;strokeColor=#2e5aa8;strokeWidth=2;endArrow=block;endFill=1;endSize=8;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.45454545454545453;entryX=0;entryY=0.45454545454545453;exitPerimeter=0;entryPerimeter=0;" edge="1" parent="1" source="traefik" target="service">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="service-pods" value="" style="html=1;edgeStyle=none;rounded=1;strokeColor=#2e5aa8;strokeWidth=2;endArrow=block;endFill=1;endSize=8;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.45454545454545453;entryX=0;entryY=0.45454545454545453;exitPerimeter=0;entryPerimeter=0;" edge="1" parent="1" source="service" target="pods">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="ingress-rules" value="" style="html=1;edgeStyle=none;rounded=1;strokeColor=#4f5d75;strokeWidth=2;endArrow=block;endFill=1;endSize=8;jumpStyle=arc;jumpSize=10;exitX=0.4666666666666667;exitY=0;entryX=0.4666666666666667;entryY=1;exitPerimeter=0;entryPerimeter=0;dashed=1;dashPattern=7 5;" edge="1" parent="1" source="ingress" target="traefik">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="deployment-owns" value="" style="html=1;edgeStyle=none;rounded=1;strokeColor=#4f5d75;strokeWidth=2;endArrow=block;endFill=1;endSize=8;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.45454545454545453;entryX=0;entryY=0.45454545454545453;exitPerimeter=0;entryPerimeter=0;dashed=1;dashPattern=7 5;" edge="1" parent="1" source="deployment" target="replicaset">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="replicaset-maintains" value="" style="html=1;edgeStyle=none;rounded=1;strokeColor=#4f5d75;strokeWidth=2;endArrow=block;endFill=1;endSize=8;jumpStyle=arc;jumpSize=10;exitX=0.5;exitY=0;entryX=0.5;entryY=1;exitPerimeter=0;entryPerimeter=0;dashed=1;dashPattern=7 5;" edge="1" parent="1" source="replicaset" target="pods">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="config-projection" value="" style="html=1;edgeStyle=none;rounded=1;strokeColor=#426858;strokeWidth=2;endArrow=block;endFill=1;endSize=8;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.6060606060606061;entryX=0;entryY=0.6060606060606061;exitPerimeter=0;entryPerimeter=0;" edge="1" parent="1" source="configmaps" target="volumes">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="volume-mounts" value="" style="html=1;edgeStyle=none;rounded=1;strokeColor=#426858;strokeWidth=2;endArrow=block;endFill=1;endSize=8;jumpStyle=arc;jumpSize=10;exitX=1;exitY=0.5151515151515151;entryX=0.1111111111111111;entryY=1;exitPerimeter=0;entryPerimeter=0;" edge="1" parent="1" source="volumes" target="pods">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="984" y="1040" />
+              <mxPoint x="984" y="692" />
+              <mxPoint x="1112" y="692" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-http" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;shape=singleArrow;fillColor=#2e5aa8;strokeColor=#2e5aa8;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="48" y="1463" width="52" height="10" />
+        </mxCell>
+        <mxCell id="legend-control" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;shape=singleArrow;fillColor=#4f5d75;strokeColor=#4f5d75;dashed=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="388" y="1463" width="52" height="10" />
+        </mxCell>
+        <mxCell id="legend-config" value="" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;shape=singleArrow;fillColor=#426858;strokeColor=#426858;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="796" y="1463" width="52" height="10" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="k3s-evidence" name="Evidence and notation">
+    <mxGraphModel page="1" pageWidth="1160" pageHeight="1000" background="#f5f5f5">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="evidence-text" value="&lt;h1&gt;Evidence and Kubernetes notation&lt;/h1&gt;&lt;p&gt;Converted from docs/architecture-diagram/k3s-architecture.html. This is the source’s 2026-09-18 snapshot, not a fresh live-cluster inspection.&lt;/p&gt;&lt;p&gt;Native Kubernetes icons: ING (Ingress), SVC (Service), POD, DEPLOY (Deployment), RS (ReplicaSet), CM (ConfigMap), VOL (Volume), Node and Control Plane. Traefik uses an ingress-role icon; it is the controller, distinct from the Glance Ingress resource.&lt;/p&gt;&lt;h2&gt;Evidence and scope&lt;/h2&gt;&lt;p&gt;Read-only snapshot: 2026-09-18, approximately 10:23 UTC. Based on the Glance manifests, Ansible inventory, live Kubernetes resources, Piloma’s Caddyfile and Pi-hole DNS. Uses the existing homelab architecture JSON as the infrastructure reference and the existing light diagram palette. This engineer-focused, fit-sized SVG expands application routing; NAS, Jellyfin storage and the unused SDN remain in the original homelab overview.&lt;/p&gt;&lt;p&gt;Traefik returned HTTP 200; Caddy returned HTTP/2 200 with a forced hostname and diagnostic certificate verification bypass. Normal curl on Piloma did not trust the Caddy CA. Pi-hole still resolved Glance to .200, so the Caddy route requires correcting DNS to .14 or a client override. No infrastructure changes were made.&lt;/p&gt;&lt;p&gt;The live Caddy Glance block is inside Jellyfin’s managed markers. The legacy catch-all still targets 127.0.0.1:32759 with no observed listener. The Pi node record is NotReady, outside the intended three-VM cluster. These are documented discrepancies, not implied fixes.&lt;/p&gt;&lt;p&gt;DNS is distinct from web traffic. Ingress configures Traefik; Deployment and ReplicaSet manage Pods. The Service shows the logical backend relationship, not a guarantee that packets traverse its virtual IP. ConfigMaps become separate read-only volume projections in each Pod. Pod IPs, ReplicaSet name and placement can change.&lt;/p&gt;&lt;p&gt;Architecture and evidence · Glance runbook · Standalone SVG&lt;/p&gt;&lt;p&gt;Authoring source: this HTML. Extract its single SVG to reproduce the vector artifact. System sans/serif fonts are intentional for offline rendering; appearance varies slightly with installed fonts. No external assets or scripts are required.&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacing=20;fontFamily=Helvetica;fontSize=16;fontColor=#2d3142;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="40" width="1080" height="900" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

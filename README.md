@@ -4,7 +4,7 @@ AlomaLab is infrastructure-as-code for a small Proxmox homelab. Terraform
 declares virtual machines, LXC containers, storage mounts, and a reserved SDN;
 Ansible configures the K3s cluster and the services hosted by the containers.
 
-![AlomaLab homelab and K3s architecture](docs/architecture-diagram/alomalab-homelab.architecture-redraw.svg)
+![AlomaLab K3s architecture: DNS, Caddy, Traefik and Glance](docs/architecture-diagram/k3s-architecture.svg)
 
 ## What is managed
 
@@ -16,11 +16,19 @@ Ansible configures the K3s cluster and the services hosted by the containers.
 - A Jellyfin LXC with Jellyfin, optional qBittorrent and Radarr playbooks,
   Syncthing, and host-backed media/shared mounts.
 - Piloma at `192.168.0.14`, an existing Raspberry Pi outside Proxmox. It runs
-  Caddy as the reverse proxy for internal services and is not a Kubernetes
-  node.
+  Pi-hole DNS and Caddy for internal HTTPS. It is outside the intended K3s
+  topology; a stale `NotReady` node record remains in the live API.
 - A Proxmox SDN (`k3szone`, `k3svnet`, and `vmbr20`) for
   `192.168.20.0/24`. It remains declared, but the current K3s VMs use `vmbr0`
   and `192.168.0.0/24` instead.
+
+## Kubernetes application access
+
+- Glance in namespace `glance-dashboard`: two Deployment replicas, a
+  ClusterIP Service, Traefik Ingress, and two ConfigMaps mounted as files.
+- Caddy forwards `glance.alomalab.internal` to the Traefik HTTP NodePort
+  at `192.168.0.200:32041`. Pi-hole currently returns `.200` for this name;
+  the Caddy HTTPS route requires DNS to return Piloma at `.14`.
 
 ## Provisioning outline
 
@@ -43,8 +51,12 @@ Ansible configures the K3s cluster and the services hosted by the containers.
      ansible/playbooks/k3s/setup-k3s.yml
    ```
 
-The Kubernetes cluster consists only of the three Proxmox VMs. Piloma remains
-outside the cluster so Caddy can retain the host's HTTP and HTTPS entry points.
+The intended cluster consists of the three Proxmox VMs. All three were Ready
+on 2026-09-18; the retired Pi record `pi-worker-1` was NotReady. Piloma runs
+Caddy on a separate host, so its ports 80/443 do not conflict with the VMs.
+
+For workload deployment and Caddy/DNS checks, follow the
+[Glance runbook](kube/glance-dashboard/README.md).
 
 ## Documentation
 
@@ -52,4 +64,6 @@ outside the cluster so Caddy can retain the host's HTTP and HTTPS entry points.
 - [Repository structure](docs/structure.md)
 - [Ansible commands and service notes](ansible/README.md)
 - [Implementation log](docs/LOGS.md)
-- [Standalone architecture diagram](docs/architecture-diagram/alomalab-homelab.architecture-redraw.html)
+- [Homelab infrastructure overview](docs/architecture-diagram/alomalab-homelab.architecture-redraw.html)
+- [Current K3s architecture SVG](docs/architecture-diagram/k3s-architecture.svg)
+- [K3s diagram with evidence notes](docs/architecture-diagram/k3s-architecture.html)
