@@ -10,8 +10,8 @@ module "k3s-cp-01" {
 
   cores = 2
 
-  dedicated_memory = 2048
-  floating_memory  = 512
+  dedicated_memory = 2560
+  floating_memory = 0
 
   size = 10
 
