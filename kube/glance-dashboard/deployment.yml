@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: glance-dashboard
+  name: glance-dashboard
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: glance-dashboard
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: glance-dashboard
+    spec:
+      containers:
+        - image: glanceapp/glance
+          name: glance
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+              readOnly: true
+            - name: assets
+              mountPath: /app/assets
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: glance-config
+        - name: assets
+          configMap:
+            name: glance-assets
+
+status: {}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: glance
+  name: glance
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http
+  selector:
+    app: glance-dashboard
+  type: ClusterIP
+status:
+  loadBalancer: {}
