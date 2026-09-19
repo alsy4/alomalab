@@ -105,14 +105,14 @@ are a snapshot, not scheduling or stable-IP guarantees.
 
 1. A LAN client queries Pi-hole on Piloma, `192.168.0.14:53`. DNS resolves a
    hostname; Pi-hole does not proxy browser HTTP traffic.
-2. For the Caddy route, `glance.alomalab.internal` must resolve to Piloma
+2. For the Caddy route, `glance.apps.alomalab.internal` must resolve to Piloma
    `192.168.0.14`. Caddy terminates HTTPS on port 443 with `tls internal`.
 3. Caddy preserves the HTTP Host and proxies over HTTP to
    `192.168.0.200:32041`, the current Traefik HTTP NodePort. Traefik's
    `kube-system/traefik` LoadBalancer Service also advertises the three VM
    addresses, with Service ports 80/443 and NodePorts 32041/30929.
 4. The `glance-dashboard/glance` Ingress selects class `traefik`, matches
-   host `glance.alomalab.internal` and path prefix `/`, and references
+   host `glance.apps.alomalab.internal` and path prefix `/`, and references
    Service `glance:8080`.
 5. That ClusterIP Service selects `app=glance-dashboard` and targets the
    container port named `http` (8080). EndpointSlice contains two ready Pod

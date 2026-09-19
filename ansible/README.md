@@ -156,7 +156,7 @@ packages, and cleans the package cache for the `debian_lxc` group.
 Glance is deployed separately using [Kubernetes manifests](../kube/glance-dashboard/README.md).
 Caddy and Pi-hole both run on Piloma. Glance's HTTPS site forwards to
 `http://192.168.0.200:32041` (Traefik's observed HTTP NodePort), preserving
-`glance.alomalab.internal` for the Ingress host match. Its local DNS record
+`glance.apps.alomalab.internal` for the Ingress host match. Its local DNS record
 must point to Piloma `192.168.0.14`; inspection still returned `192.168.0.200`.
 
 The live Glance block was found **inside the Jellyfin Ansible-managed markers**.

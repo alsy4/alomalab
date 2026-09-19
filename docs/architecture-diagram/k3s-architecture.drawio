@@ -23,7 +23,7 @@
         <mxCell id="browser-text-1" value="LAN browser" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#2d3142;spacing=0;" vertex="1" parent="browser">
           <mxGeometry as="geometry" x="20.0" y="34.0" width="232.0" height="25" />
         </mxCell>
-        <mxCell id="browser-text-2" value="glance.alomalab.internal" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="browser">
+        <mxCell id="browser-text-2" value="glance.apps.alomalab.internal" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="browser">
           <mxGeometry as="geometry" x="20.0" y="65.0" width="232.0" height="20.0" />
         </mxCell>
         <mxCell id="browser-text-3" value="Trusts Caddy CA for HTTPS" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="browser">
@@ -134,7 +134,7 @@
         <mxCell id="ingress-text-2" value="class: traefik · path: / (Prefix)" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="ingress">
           <mxGeometry as="geometry" x="20.0" y="65.0" width="320.0" height="20.0" />
         </mxCell>
-        <mxCell id="ingress-text-3" value="host: glance.alomalab.internal" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="ingress">
+        <mxCell id="ingress-text-3" value="host: glance.apps.alomalab.internal" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="ingress">
           <mxGeometry as="geometry" x="20.0" y="86.0" width="320.0" height="20.0" />
         </mxCell>
         <mxCell id="ingress-text-4" value="backend: glance:8080" style="html=1;whiteSpace=wrap;fontFamily=Helvetica;fontColor=#2d3142;text;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;fontSize=13.0;fontStyle=0;fontColor=#4f5d75;spacing=0;" vertex="1" parent="ingress">

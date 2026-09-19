@@ -26,7 +26,7 @@ Ansible configures the K3s cluster and the services hosted by the containers.
 
 - Glance in namespace `glance-dashboard`: two Deployment replicas, a
   ClusterIP Service, Traefik Ingress, and two ConfigMaps mounted as files.
-- Caddy forwards `glance.alomalab.internal` to the Traefik HTTP NodePort
+- Caddy forwards `glance.apps.alomalab.internal` to the Traefik HTTP NodePort
   at `192.168.0.200:32041`. Pi-hole currently returns `.200` for this name;
   the Caddy HTTPS route requires DNS to return Piloma at `.14`.
 

@@ -24,7 +24,7 @@ Compose and Glance configuration YAML, which are not Kubernetes resources.
 
 The Service selects `app=glance-dashboard`; `targetPort: http` resolves to the
 container's named port 8080. Ingress `glance` uses class `traefik`, host
-`glance.alomalab.internal`, path `/` with `Prefix`, and backend `glance:8080`.
+`glance.apps.alomalab.internal`, path `/` with `Prefix`, and backend `glance:8080`.
 The Deployment creates a ReplicaSet that maintains two Pods. Service routing
 selects Pods, not the Deployment or ReplicaSet.
 
@@ -65,7 +65,7 @@ requests/limits, or replica-spread constraints are declared.
 Piloma (`192.168.0.14`) runs Caddy and Pi-hole. The verified Caddy site is:
 
 ```caddyfile
-glance.alomalab.internal {
+glance.apps.alomalab.internal {
     tls internal
     reverse_proxy http://192.168.0.200:32041
 }
@@ -78,7 +78,7 @@ replace that region and remove Glance's site.
 For Caddy access, configure Pi-hole's local DNS record:
 
 ```text
-glance.alomalab.internal → 192.168.0.14
+glance.apps.alomalab.internal → 192.168.0.14
 ```
 
 The observed answer was still `192.168.0.200`, which bypasses Caddy. Pi-hole
@@ -108,14 +108,14 @@ observed there, and Piloma is outside the intended three-VM K3s cluster.
 
 ```bash
 # DNS must return Piloma for the Caddy path.
-dig @192.168.0.14 glance.alomalab.internal +short
+dig @192.168.0.14 glance.apps.alomalab.internal +short
 
 # Isolate Traefik + Glance, independent of DNS and Caddy.
-curl -I -H 'Host: glance.alomalab.internal' http://192.168.0.200:32041
+curl -I -H 'Host: glance.apps.alomalab.internal' http://192.168.0.200:32041
 
 # Isolate Caddy routing; requires trust of Caddy's internal CA.
-curl -I --resolve glance.alomalab.internal:443:192.168.0.14 \
-  https://glance.alomalab.internal
+curl -I --resolve glance.apps.alomalab.internal:443:192.168.0.14 \
+  https://glance.apps.alomalab.internal
 
 kubectl get ingress,svc,pods -n glance-dashboard -o wide
 kubectl get endpointslices -n glance-dashboard \
