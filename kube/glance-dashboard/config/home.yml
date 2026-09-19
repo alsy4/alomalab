@@ -1,6 +1,22 @@
 - name: Home
   # Optionally, if you only have a single page you can hide the desktop navigation for a cleaner look
-  # hide-desktop-navigation: true
+  hide-desktop-navigation: true
+  theme:
+    presets:
+      tucan:
+        background-color: 50 1 6
+        primary-color: 24 97 58
+        negative-color: 209 88 54
+      gruvbox-dark:
+        background-color: 0 0 16
+        primary-color: 43 59 81
+        positive-color: 61 66 44
+        negative-color: 6 96 59
+      kanagawa-dark:
+        background-color: 240 13 14
+        primary-color: 51 33 68
+        negative-color: 358 100 68
+        contrast-multiplier: 1.2
   columns:
     - size: small
       widgets:
@@ -20,15 +36,10 @@
             - url: https://samwho.dev/rss.xml
             - url: https://ishadeed.com/feed.xml
               title: Ahmad Shadeed
-
-        - type: twitch-channels
-          channels:
-            - theprimeagen
-            - j_blow
-            - giantwaffle
-            - cohhcarnage
-            - christitustech
-            - EJ_SA
+            - url: https://aws.amazon.com/blogs/aws/feed/
+              title: AWS
+            - url: https://www.geeksforgeeks.org/
+              title: GeeksForGeeks
 
     - size: full
       widgets:
@@ -36,14 +47,18 @@
           widgets:
             - type: hacker-news
             - type: lobsters
+              sort-by: hot
 
-        - type: videos
-          channels:
-            - UCXuqSBlHAE6Xw-yeJA0Tunw # Linus Tech Tips
-            - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
-            - UCsBjURrPoezykLs9EqgamOA # Fireship
-            - UCBJycsmduvYEL83R_U4JriQ # Marques Brownlee
-            - UCHnyfMqiRRG1u-2MsSQLbXA # Veritasium
+            - type: rss
+              title: Cloudflare Engineering
+              feeds:
+                - url: https://blog.cloudflare.com/tag/engineering/rss
+                  title: Cloudflare Engineering
+            - type: rss
+              title: AWS
+              feeds:
+                - url: https://aws.amazon.com/blogs/architecture/feed/
+                  title: AWS
 
         - type: group
           widgets:
@@ -57,7 +72,7 @@
     - size: small
       widgets:
         - type: weather
-          location: London, United Kingdom
+          location: Kota Bharu, Malaysia
           units: metric # alternatively "imperial"
           hour-format: 12h # alternatively "24h"
           # Optionally hide the location from being displayed in the widget
@@ -75,14 +90,3 @@
               name: Apple
             - symbol: MSFT
               name: Microsoft
-
-        - type: releases
-          cache: 1d
-          # Without authentication the Github API allows for up to 60 requests per hour. You can create a
-          # read-only token from your Github account settings and use it here to increase the limit.
-          # token: ...
-          repositories:
-            - glanceapp/glance
-            - go-gitea/gitea
-            - immich-app/immich
-            - syncthing/syncthing

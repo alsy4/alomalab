@@ -38,7 +38,6 @@ spec:
 
 status: {}
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -47,9 +46,9 @@ metadata:
   name: glance
 spec:
   ports:
-  - name: http
-    port: 8080
-    targetPort: http
+    - name: http
+      port: 8080
+      targetPort: http
   selector:
     app: glance-dashboard
   type: ClusterIP
