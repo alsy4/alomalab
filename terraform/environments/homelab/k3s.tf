@@ -50,6 +50,8 @@ module "k3s-worker" {
   cores = 2
 
   dedicated_memory = 1538
+  # Either worker can host Argo CD; do not balloon them down to 512 MiB.
+  floating_memory = 1538
 
   size = 8
 

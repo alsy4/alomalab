@@ -14,4 +14,4 @@ spec:
     namespace: glance-dashboard
   syncPolicy:
     syncOptions:
-      - createNamespace = true
+      - CreateNamespace=true
