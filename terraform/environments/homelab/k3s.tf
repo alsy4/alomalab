@@ -47,10 +47,9 @@ module "k3s-worker" {
   vm_id        = each.value.vm_id
   image_file_id = proxmox_download_file.ubuntu_jammy.id
 
-  cores = 1
+  cores = 2
 
-  dedicated_memory = 1024
-  floating_memory  = 512
+  dedicated_memory = 1538
 
   size = 8
 
