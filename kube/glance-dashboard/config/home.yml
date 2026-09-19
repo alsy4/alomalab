@@ -1,22 +1,6 @@
 - name: Home
   # Optionally, if you only have a single page you can hide the desktop navigation for a cleaner look
   hide-desktop-navigation: false
-  theme:
-    presets:
-      tucan:
-        background-color: 50 1 6
-        primary-color: 24 97 58
-        negative-color: 209 88 54
-      gruvbox-dark:
-        background-color: 0 0 16
-        primary-color: 43 59 81
-        positive-color: 61 66 44
-        negative-color: 6 96 59
-      kanagawa-dark:
-        background-color: 240 13 14
-        primary-color: 51 33 68
-        negative-color: 358 100 68
-        contrast-multiplier: 1.2
   columns:
     - size: small
       widgets:
