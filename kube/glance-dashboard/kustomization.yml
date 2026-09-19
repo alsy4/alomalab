@@ -11,6 +11,7 @@ configMapGenerator:
     files:
       - config/glance.yml
       - config/home.yml
+      - config/start.yml
   - name: glance-assets
     files:
-      - assets/user.css
+      - assets/user.
