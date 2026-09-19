@@ -54,11 +54,11 @@
               feeds:
                 - url: https://blog.cloudflare.com/tag/engineering/rss
                   title: Cloudflare Engineering
-            - type: rss
-              title: AWS
-              feeds:
-                - url: https://aws.amazon.com/blogs/architecture/feed/
-                  title: AWS
+            # - type: rss
+            #   title: AWS
+            #   feeds:
+            #     - url: https://aws.amazon.com/blogs/architecture/feed/
+            #       title: AWS
 
         - type: group
           widgets:
