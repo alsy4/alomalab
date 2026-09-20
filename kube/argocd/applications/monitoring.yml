@@ -20,7 +20,7 @@ spec:
           - $values/kube/monitoring/values.yml
 
     - repoURL: https://github.com/alsy4/alomalab.git
-      targetRevision: main
+      targetRevision: kube
       ref: values
       path: kube/monitoring/manifests
 
