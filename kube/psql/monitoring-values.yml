@@ -1,0 +1,28 @@
+grafana:
+  defaulDashboardEnabled: true
+nodeExporter:
+  enabled: true
+kubeEtcd:
+  enabled: true
+kubeControllerManager:
+  enabled: true
+kubeScheduler:
+  enabled: true
+kubeProxy:
+  enabled: true
+defaultRules:
+  rules:
+    defaultRules:
+      rules:
+        etcd: false
+        kubeControllerManager: false
+        kubeSchedulerAlerting: false
+        kubeSchedulerRecording: false
+        kubeProxy: false
+        kubePrometheusNodeRecording: true
+        kubernetesApps: true
+        kubernetesResources: true
+        kubernetesStorage: true
+        kubeStateMetrics: true
+        nodeExporterAlerting: true
+        nodeExporterRecording: true
