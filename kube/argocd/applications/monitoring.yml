@@ -20,11 +20,14 @@ spec:
           - $values/kube/monitoring/values.yml
 
     - repoURL: https://github.com/alsy4/alomalab.git
-      targetRevision: kube
+      targetRevision: main
       ref: values
       path: kube/monitoring/manifests
 
   syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
-      - ServerSideApply=true
+        - CreateNamespace=true
+        - ServerSideApply=true
