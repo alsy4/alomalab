@@ -6,6 +6,7 @@
     - size: full
       widgets:
         - type: search
+          search-engine: google
           autofocus: true
 
         - type: monitor
@@ -13,7 +14,8 @@
           title: Services
           sites:
             - title: Jellyfin
-              url: https://yourdomain.com/
+              url: https://jellyfin.alomalab.internal
+              check-url: http://192.168.0.103:8096/health
               icon: si:jellyfin
             - title: Gitea
               url: https://yourdomain.com/
@@ -24,12 +26,15 @@
             - title: Immich
               url: https://yourdomain.com/
               icon: si:immich
-            - title: AdGuard Home
-              url: https://yourdomain.com/
-              icon: si:adguard
+            - title: Pihole
+              url: https://pihole.alomalab.internal/admin
+              check-url: http://192.168.0.14:8080/admin/
+              icon: si:pihole
             - title: Vaultwarden
               url: https://yourdomain.com/
               icon: si:vaultwarden
+
+        - $include: proxmox.yml
 
         - type: bookmarks
           groups:

@@ -12,6 +12,7 @@ configMapGenerator:
       - config/glance.yml
       - config/home.yml
       - config/start.yml
+      - config/proxmox.yml
   - name: glance-assets
     files:
       - assets/user.css

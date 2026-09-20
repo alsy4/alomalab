@@ -1,0 +1,56 @@
+- type: custom-api
+  title: Proxmox health 
+  title-url: https://pve.alomalab.internal
+  cache: 1m
+  url: https://192.168.0.20:8006/api2/json/cluster/resources
+  allow-insecure: true
+  headers:
+    Accept: application/json
+    Authorization: ${PROXMOX_AUTHORIZATION}
+  template: |
+    {{ define "resource-row" }}
+      {{ $status := .String "status" }}
+      {{ $up := or (eq $status "online") (eq $status "running") }}
+      <tr>
+        <td style="padding: 8px 12px 8px 0">
+          <div class="color-highlight">{{ if eq (.String "type") "node" }}{{ .String "node" }}{{ else }}{{ .String "name" }}{{ end }}</div>
+          <div class="size-h6 color-subdue">{{ if eq (.String "type") "node" }}HOST{{ else if eq (.String "type") "qemu" }}VM {{ .Int "vmid" }}{{ else }}LXC {{ .Int "vmid" }}{{ end }}</div>
+        </td>
+        <td class="{{ if $up }}color-positive{{ else }}color-negative{{ end }}" style="padding-right: 12px">{{ $status }}</td>
+        <td style="padding-right: 12px; white-space: nowrap">
+          {{ if and $up (.Exists "uptime") }}
+            {{ $seconds := .Int "uptime" }}
+            {{ div $seconds 86400 }}d {{ mod (div $seconds 3600) 24 }}h {{ mod (div $seconds 60) 60 }}m
+          {{ else }}—{{ end }}
+        </td>
+        <td style="padding-right: 12px">{{ if and $up (.Exists "cpu") }}{{ mul (.Float "cpu") 100 | printf "%.1f" }}%{{ else }}—{{ end }}</td>
+        <td>{{ if and $up (gt (.Int "maxmem") 0) (.Exists "mem") }}{{ mul (div (.Float "mem") (.Float "maxmem")) 100 | printf "%.0f" }}%{{ else }}—{{ end }}</td>
+      </tr>
+    {{ end }}
+    {{ if ne .Response.StatusCode 200 }}
+      <p class="color-negative">Proxmox statistics unavailable (HTTP {{ .Response.StatusCode }}).</p>
+    {{ else }}
+      {{ $nodes := .JSON.Array "data.#(type==\"node\")#" }}
+      {{ $vms := .JSON.Array "data.#(type==\"qemu\")#|#(template==0)#" }}
+      {{ $lxcs := .JSON.Array "data.#(type==\"lxc\")#|#(template==0)#" }}
+      {{ if eq (add (len $nodes) (add (len $vms) (len $lxcs))) 0 }}
+        <p class="color-negative">No resources visible. Check the monitoring token's audit permissions.</p>
+      {{ else }}
+        <div class="flex gap-20 margin-bottom-10">
+          <div><span class="color-highlight">{{ len (.JSON.Array "data.#(type==\"node\")#|#(status==\"online\")#") }}/{{ len $nodes }}</span> hosts online</div>
+          <div><span class="color-highlight">{{ len (.JSON.Array "data.#(type==\"qemu\")#|#(template==0)#|#(status==\"running\")#") }}/{{ len $vms }}</span> VMs running</div>
+          <div><span class="color-highlight">{{ len (.JSON.Array "data.#(type==\"lxc\")#|#(template==0)#|#(status==\"running\")#") }}/{{ len $lxcs }}</span> LXCs running</div>
+        </div>
+        <div style="overflow-x: auto">
+          <table style="width: 100%; min-width: 480px; text-align: left; border-collapse: collapse">
+            <thead class="color-subdue size-h6"><tr><th scope="col">RESOURCE</th><th scope="col">STATUS</th><th scope="col">UPTIME</th><th scope="col">CPU</th><th scope="col">MEMORY</th></tr></thead>
+            <tbody>
+              {{ range sortByString "node" "asc" $nodes }}{{ template "resource-row" . }}{{ end }}
+              {{ range sortByInt "vmid" "asc" $vms }}{{ template "resource-row" . }}{{ end }}
+              {{ range sortByInt "vmid" "asc" $lxcs }}{{ template "resource-row" . }}{{ end }}
+            </tbody>
+          </table>
+        </div>
+        <p class="size-h6 color-subdue margin-top-10">Proxmox power status · uptime since boot · cached for 1 minute</p>
+      {{ end }}
+    {{ end }}

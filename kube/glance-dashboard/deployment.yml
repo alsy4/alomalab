@@ -18,10 +18,21 @@ spec:
       containers:
         - image: glanceapp/glance
           name: glance
+          env:
+            - name: PROXMOX_AUTHORIZATION
+              valueFrom:
+                secretKeyRef:
+                  name: glance-proxmox
+                  key: authorization
+            - name: SSL_CERT_FILE
+              value: /app/proxmox-ca/ca.crt
           ports:
             - name: http
               containerPort: 8080
           volumeMounts:
+            - name: proxmox-ca
+              mountPath: /app/proxmox-ca
+              readOnly: true
             - name: config
               mountPath: /app/config
               readOnly: true
@@ -29,6 +40,12 @@ spec:
               mountPath: /app/assets
               readOnly: true
       volumes:
+        - name: proxmox-ca
+          secret:
+            secretName: glance-proxmox
+            items:
+              - key: ca.crt
+                path: ca.crt
         - name: config
           configMap:
             name: glance-config
