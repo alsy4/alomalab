@@ -43,6 +43,13 @@ defaultRules:
     prometheusOperator: false
 enabled: true
 grafana:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - grafana.apps.alomalab.internal
+    path: /
+    pathType: Prefix
   existingSecret: prometheus-community-grafana
   userKey: admin-user
   userPassword: admin-password
