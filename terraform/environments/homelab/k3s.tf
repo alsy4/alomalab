@@ -1,5 +1,5 @@
 module "k3s-cp-01" {
-  source     = "../../modules/k3s"
+  source     = "../../modules/pve-vm"
 
   name         = "k3s-cp-01"
   description  = "k3s-control-plane"
@@ -38,7 +38,7 @@ locals {
 
 module "k3s-worker" {
   for_each = local.k3s_workers
-  source     = "../../modules/k3s"
+  source     = "../../modules/pve-vm"
 
   name         = each.key
   description  = "k3s worker node"
