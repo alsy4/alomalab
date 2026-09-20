@@ -1,4 +1,4 @@
-resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
+resource "proxmox_virtual_environment_vm" "vm-node" {
   name        = var.name
   description = var.description
   tags        = var.tags
@@ -31,6 +31,7 @@ resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
   }
 
   initialization {
+    vendor_data_file_id = var.vendor_data_file_id
     datastore_id = var.datastore_id
 
     ip_config {

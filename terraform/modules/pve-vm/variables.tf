@@ -61,6 +61,12 @@ variable "image_file_id" {
   description = "Proxmox file ID of the cloud image to import as the VM disk"
 }
 
+variable "vendor_data_file_id" {
+  description = "Cloud-init boostrap qemu"
+  type = string
+  default = null
+}
+
 variable "size" {
   type        = number
   description = "disk size in gb"
