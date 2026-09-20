@@ -18,7 +18,7 @@ spec:
       helm:
         releaseName: prometheus-community
         valueFiles:
-          - $values/kube/monitoring/values.yaml
+          - $values/kube/monitoring/values.yml
 
     # Source 2: your Helm values and additional manifests.
     - repoURL: https://github.com/YOUR-USER/YOUR-REPO.git
