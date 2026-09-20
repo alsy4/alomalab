@@ -1,0 +1,70 @@
+alertmanager:
+  enabled: true
+defaultRules:
+  create: true
+  rules:
+    alertmanager: false
+    configReloaders: false
+    defaultRules:
+      rules:
+        etcd: false
+        kubeControllerManager: false
+        kubePrometheusNodeRecording: true
+        kubeProxy: false
+        kubeSchedulerAlerting: false
+        kubeSchedulerRecording: false
+        kubeStateMetrics: true
+        kubernetesApps: true
+        kubernetesResources: true
+        kubernetesStorage: true
+        nodeExporterAlerting: true
+        nodeExporterRecording: true
+    etcd: false
+    general: false
+    k8s: true
+    kubeApiserver: false
+    kubeApiserverAvailability: false
+    kubeApiserverSlos: false
+    kubePrometheusGeneral: false
+    kubePrometheusNodeRecording: false
+    kubeProxy: false
+    kubeScheduler: false
+    kubeStateMetrics: false
+    kubelet: true
+    kubernetesApps: false
+    kubernetesResources: false
+    kubernetesStorage: false
+    kubernetesSystem: false
+    network: false
+    node: true
+    nodeExporterAlerting: false
+    nodeExporterRecording: true
+    prometheus: false
+    prometheusOperator: false
+enabled: true
+grafana:
+  existingSecret: prometheus-community-grafana
+  userKey: admin-user
+  userPassword: admin-password
+  defaulDashboardEnabled: true
+  defaultDashboardsEnabled: false
+  enabled: true
+  sidecar:
+    dashboards:
+      enabled: true
+kubeControllerManager:
+  enabled: true
+kubeEtcd:
+  enabled: true
+kubeProxy:
+  enabled: true
+kubeScheduler:
+  enabled: true
+nodeExporter:
+  enabled: true
+prometheus:
+  prometheusSpec:
+    podMonitorSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
