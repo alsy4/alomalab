@@ -1,41 +1,35 @@
 # AlomaLab Homelab
 
-AlomaLab is infrastructure-as-code for a small Proxmox homelab. Terraform
-declares virtual machines, LXC containers, storage mounts, and a reserved SDN;
-Ansible configures the K3s cluster and the services hosted by the containers.
+Terraform provisions Proxmox VMs and LXCs. Ansible configures K3s and host
+services. Argo CD deploys Glance and monitoring; CloudNativePG manages PostgreSQL.
 
-![AlomaLab K3s architecture: DNS, Caddy, Traefik and Glance](docs/architecture-diagram/k3s-architecture.svg)
+## Current setup
 
-## What is managed
+- Proxmox: `192.168.0.20`; K3s control plane `.200`, workers `.201–202`.
+- K3s `v1.36.3+k3s1`, running on Ubuntu Jammy VMs on `vmbr0`.
+- Piloma `.14`: external Raspberry Pi running Pi-hole and Caddy.
+- NAS LXC `.102`: Samba and Syncthing; Jellyfin LXC `.103`: media services.
+- Reserved Terraform SDN `vmbr20` / `192.168.20.0/24` is not used yet by the VMs.
 
-- A three-VM K3s topology on the Proxmox host: one control plane at
-  `192.168.0.200` and two workers at `192.168.0.201–202`.
-- K3s `v1.36.3+k3s1`, installed through the `k3s-ansible` collection after the
-  VMs have been provisioned.
-- A NAS LXC with an authenticated Samba share and a Syncthing service target.
-- A Jellyfin LXC with Jellyfin, optional qBittorrent and Radarr playbooks,
-  Syncthing, and host-backed media/shared mounts.
-- Piloma at `192.168.0.14`, an existing Raspberry Pi outside Proxmox. It runs
-  Pi-hole DNS and Caddy for internal HTTPS. It is outside the intended K3s
-  topology; a stale `NotReady` node record remains in the live API.
-- A Proxmox SDN (`k3szone`, `k3svnet`, and `vmbr20`) for
-  `192.168.20.0/24`. It remains declared, but the current K3s VMs use `vmbr0`
-  and `192.168.0.0/24` instead.
+## GitOps applications
 
-## Kubernetes application access
+Both Applications use `https://github.com/alsy4/alomalab.git`.
 
-- Glance in namespace `glance-dashboard`: two Deployment replicas, a
-  ClusterIP Service, Traefik Ingress, and two ConfigMaps mounted as files.
-- Caddy forwards `glance.apps.alomalab.internal` to the Traefik HTTP NodePort
-  at `192.168.0.200:32041`. Pi-hole currently returns `.200` for this name;
-  the Caddy HTTPS route requires DNS to return Piloma at `.14`.
+| Application | Source                                                                  | Namespace          | Automated policy          |
+| ----------- | ----------------------------------------------------------------------- | ------------------ | ------------------------- |
+| Glance      | Branch `kube`, `kube/glance-dashboard`, Kustomize                       | `glance-dashboard` | Prune and self-heal       |
+| Monitoring  | Helm `kube-prometheus-stack` 91.4.1; branch `main` for values/manifests | `psql`             | Self-heal; prune disabled |
 
-## Provisioning outline
+Glance uses two replicas and an externally created Proxmox credential Secret.
+Monitoring includes Prometheus, Grafana, Alertmanager, and exporters. Their
+Traefik hosts are `glance.apps.alomalab.internal` and
+`grafana.apps.alomalab.internal`.
 
-1. Supply the Proxmox endpoint, account credentials, SSH public key, LXC
-   template ID, and root password through an uncommitted
-   `terraform/environments/homelab/terraform.tfvars` file.
-2. Provision the Proxmox resources:
+## Provisioning
+
+1. Supply Proxmox credentials, SSH key, template ID, and root password in an
+   uncommitted `terraform/environments/homelab/terraform.tfvars`.
+2. Run Terraform:
 
    ```bash
    terraform -chdir=terraform/environments/homelab init
@@ -43,27 +37,25 @@ Ansible configures the K3s cluster and the services hosted by the containers.
    terraform -chdir=terraform/environments/homelab apply
    ```
 
-3. Install the Ansible collection and configure K3s:
+3. Install K3s 
 
    ```bash
    ansible-galaxy collection install -r ansible/requirements.yml
    ansible-playbook -i ansible/inventory/homelab.yml \
-     ansible/playbooks/k3s/setup-k3s.yml
+     ansible/playbooks/k3s/setup-k3s.yml \
    ```
 
-The intended cluster consists of the three Proxmox VMs. All three were Ready
-on 2026-09-18; the retired Pi record `pi-worker-1` was NotReady. Piloma runs
-Caddy on a separate host, so its ports 80/443 do not conflict with the VMs.
-
-For workload deployment and Caddy/DNS checks, follow the
-[Glance runbook](kube/glance-dashboard/README.md).
+4. Follow the [GitOps runbook](docs/gitops.md) for application bootstrap and checks.
 
 ## Documentation
 
-- [Architecture and ownership boundaries](docs/architecture.md)
+- [Architecture and ownership](docs/architecture.md)
 - [Repository structure](docs/structure.md)
-- [Ansible commands and service notes](ansible/README.md)
+- [Glance setup and credentials](kube/glance-dashboard/README.md)
+- [Ansible operations](ansible/README.md)
 - [Implementation log](docs/LOGS.md)
-- [Homelab infrastructure overview](docs/architecture-diagram/alomalab-homelab.architecture-redraw.html)
-- [Current K3s architecture SVG](docs/architecture-diagram/k3s-architecture.svg)
-- [K3s diagram with evidence notes](docs/architecture-diagram/k3s-architecture.html)
+
+Existing [K3s](docs/architecture-diagram/k3s-architecture.html) and
+[homelab diagrams](docs/architecture-diagram/alomalab-homelab.architecture-redraw.html)
+are historical snapshots, predating the current GitOps setup. See the
+architecture document for current ports, sizing, and deployment ownership.
