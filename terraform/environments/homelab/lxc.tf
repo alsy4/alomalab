@@ -55,7 +55,7 @@ module "jellyfin" {
   gateway      = "192.168.0.1"
 
   cpu_core         = 2
-  dedicated_memory = 4096
+  dedicated_memory = 3072
   swap             = 1024
   disk_size        = 16
   mount_points = [
