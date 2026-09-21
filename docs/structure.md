@@ -22,7 +22,7 @@
 │       │   ├── setup-jellyfin.yml               # Installs Jellyfin and manages its Caddy route
 │       │   ├── setup-mount-points.yml           # Manages Jellyfin LXC bind mounts with pct
 │       │   └── update-debian.yml                # Updates both Debian LXC hosts
-│       ├── k3s/
+│       ├── pve-vm/
 │       │   ├── setup-k3s.yml                    # Imports the k3s-ansible cluster playbook
 │       │   └── update-debian.yml                # K3s update playbook; target group needs alignment
 │       └── nas/
@@ -40,23 +40,30 @@
 │   │   │                                        # Diagram-design source for the static figure
 │   │   └── alomalab-homelab.architecture-redraw.svg
 │   │                                            # README/docs vector export
+│   ├── gitops.md                                # Bootstrap, source branches, verification
 │   ├── LOGS.md                                  # Chronological implementation log
 │   └── structure.md                             # This guide
 ├── kube/
-│   └── glance-dashboard/                       # Glance application manifests and runbook
-│       ├── README.md                          # Apply, configuration, DNS/Caddy and diagnostics
-│       ├── deployment.yml                     # Two-replica Deployment + ClusterIP Service
-│       ├── ingress.yml                        # Traefik host/path routing
-│       ├── configmap.yml                      # Generated glance.yml + home.yml data
-│       ├── assets-configmap.yml               # Generated user.css data
-│       ├── config/                            # Editable Glance configuration source
-│       ├── assets/                            # Editable CSS source
-│       └── docker-compose.yml                 # Original Compose reference
+│   ├── argocd/applications/                    # Glance and monitoring Applications
+│   ├── monitoring/
+│   │   ├── values.yml                         # Helm values for kube-prometheus-stack
+│   │   └── manifests/postgres-podmonitor.yml   # Empty placeholder
+│   ├── psql/psql.yml                          # Manually applied CloudNativePG Cluster
+│   └── glance-dashboard/
+│       ├── README.md                          # Credentials and routing
+│       ├── kustomization.yml                  # Resources and ConfigMap generators
+│       ├── deployment.yml                     # Two replicas and Service
+│       ├── ingress.yml                        # Traefik route
+│       ├── assets-configmap.yml               # Legacy; not used by Kustomize
+│       ├── config/                            # glance/home/start/proxmox YAML
+│       ├── assets/                            # CSS source
+│       └── docker-compose.yml                 # Compose reference
 ├── terraform/
 │   ├── versions.tf                              # Root Terraform/provider requirements
 │   ├── environments/
 │   │   └── homelab/
 │   │       ├── .terraform.lock.hcl              # Locked environment provider selection
+│   │       ├── cloud-init.tf                    # Worker bootstrap snippet
 │   │       ├── image.tf                         # Downloads the Ubuntu Jammy cloud image
 │   │       ├── k3s.tf                           # Control plane and two worker VMs
 │   │       ├── lxc.tf                           # NAS and Jellyfin LXC declarations
@@ -95,8 +102,6 @@ tracked from an earlier commit even though it is not maintained source. Treat
 it as sensitive and remove it from repository history in a separate,
 deliberate security change.
 
-The K3s diagram complements the original homelab JSON/HTML overview. It includes
-verified live routes and explicitly labeled discrepancies; it does not imply
-that Caddy or Pi-hole configuration is checked into this repository.
-The existing untracked `docs-agent.yml` workflow is an additional draft alongside
-`documentation-agent.yml`; this documentation update does not modify either.
+Existing diagrams are historical snapshots; architecture.md documents current
+GitOps ownership, ports, and node state. The untracked docs-agent.yml workflow
+is a separate draft and is not changed by this documentation update.

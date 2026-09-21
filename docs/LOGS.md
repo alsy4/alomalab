@@ -1,5 +1,15 @@
 # Implementation log
 
+[2026-09-21 06:04 UTC] - Documented current GitOps setup and database recovery
+
+Repository and read-only cluster inspection confirmed Glance watches branch
+`kube`, while monitoring uses kube-prometheus-stack 91.4.1 and branch `main`.
+Both Applications were Synced/Healthy and PostgreSQL had three ready instances.
+Documented manually applied PostgreSQL, local-path storage, the retired worker
+cleanup performed earlier in this session, stale Ansible inventory, current
+Traefik ports, and the empty PodMonitor source. This is an operational review,
+not an implementation commit. Only documentation changed during this update.
+
 [2026-09-18 10:23 UTC] - Verified the Caddy-to-K3s Glance route and documented the workload
 
 Read-only inspection confirmed the live Glance Caddy site on Piloma forwarding
