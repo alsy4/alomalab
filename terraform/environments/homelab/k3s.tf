@@ -10,10 +10,10 @@ module "k3s-cp-01" {
 
   cores = 2
 
-  dedicated_memory = 2560
+  dedicated_memory = 4096
   floating_memory = 0
 
-  size = 10
+  size = 20
 
   address = "192.168.0.200"
   gateway = "192.168.0.1"
@@ -53,7 +53,7 @@ module "k3s-worker" {
   # Either worker can host Argo CD; do not balloon them down to 512 MiB.
   floating_memory = 1538
 
-  size = 8
+  size = 16
 
   address = each.value.address
   gateway = "192.168.0.1"
