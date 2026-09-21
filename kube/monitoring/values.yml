@@ -67,6 +67,16 @@ grafana:
   sidecar:
     dashboards:
       enabled: true
+  persistence:
+    enabled: true
+    type: pvc
+    storageClassName: local-path
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+
+  deploymentStrategy:
+    type: Recreate
 kubeControllerManager:
   enabled: true
 kubeEtcd:
