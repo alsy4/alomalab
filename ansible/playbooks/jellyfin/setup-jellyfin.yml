@@ -93,7 +93,6 @@
     jellyfin_upstream_port: 8096
     caddyfile: /etc/caddy/Caddyfile
 
-  pre_tasks:
   tasks:
     - name: Require an existing Caddyfile
       ansible.builtin.stat:
@@ -105,10 +104,35 @@
         that: caddyfile_status.stat.exists
         fail_msg: "Caddyfile not found at {{ caddyfile }} on Piloma. Set caddyfile to its actual path."
 
+    - name: Read Caddy configuration before replacing the Jellyfin block
+      ansible.builtin.slurp:
+        src: "{{ caddyfile }}"
+      register: jellyfin_caddy_config
+      no_log: true
+
+    - name: Refuse to overwrite foreign routes in Jellyfin's managed region
+      ansible.builtin.assert:
+        that:
+          - caddy_text.count('# BEGIN ANSIBLE MANAGED JELLYFIN') == caddy_text.count('# END ANSIBLE MANAGED JELLYFIN')
+          - caddy_text.count('# BEGIN ANSIBLE MANAGED JELLYFIN') <= 1
+          - >-
+            caddy_text.count('# BEGIN ANSIBLE MANAGED JELLYFIN') == 0 or
+            (jellyfin_region | regex_search(jellyfin_only_pattern)) is not none
+        fail_msg: >-
+          Jellyfin's managed markers contain unexpected content or are malformed.
+          Preserve and move the apps route into its own K3S APPS markers first;
+          see ansible/README.md. No Caddy block has been replaced.
+      vars:
+        caddy_text: "{{ jellyfin_caddy_config.content | b64decode }}"
+        jellyfin_region: "{{ caddy_text | regex_search('(?s)(?<=# BEGIN ANSIBLE MANAGED JELLYFIN\n).*?(?=# END ANSIBLE MANAGED JELLYFIN)') | default('', true) }}"
+        jellyfin_only_pattern: '(?s)^\s*{{ jellyfin_hostname | regex_escape }}\s*\{\s*tls\s+internal\s+reverse_proxy\s+[^\s{}]+\s*\}\s*$'
+
     - name: Add the Jellyfin site to Caddy
       ansible.builtin.blockinfile:
         path: "{{ caddyfile }}"
         marker: "# {mark} ANSIBLE MANAGED JELLYFIN"
+        backup: true
+        validate: "caddy validate --config %s --adapter caddyfile"
         block: |
           {{ jellyfin_hostname }} {
               tls internal

@@ -1,5 +1,28 @@
 # Implementation log
 
+[2026-09-24] - Prepared Step 1 maintenance fixes and verified live state read-only
+
+Removed the retired worker inventory entry; verified the existing maintenance
+playbook already selects `k3s_cluster`. Pinned Glance to its observed live digest,
+added health probes and resource bounds, and restored its runbook. Added the
+`psql` PodMonitor and monitoring runbook. Added independent Caddy apps ownership
+and guards preventing Jellyfin from overwriting foreign routes. Updated docs
+to distinguish the declared and current two-instance database from September
+21's three-instance observation. No live configuration was changed.
+
+Read-only checks found three Ready nodes, two healthy PostgreSQL instances,
+Glance Synced/Healthy, and monitoring OutOfSync/Progressing. The PostgreSQL
+exporter responds, but none of 21 active Prometheus targets scrape it. DNS now
+points Glance/Grafana/Jellyfin to Piloma; the live wildcard Caddy route works
+through `.200:80` but still resides inside Jellyfin markers. NodePort 32546 also
+responds; the local catch-all fallback remains unverified. Live ownership
+migration and post-deployment target verification remain pending.
+
+Validation: repository YAML parsing, Kustomize rendering, Kubernetes client-only
+dry runs, Ansible syntax and three-host selection, and local Caddy ownership
+fixtures (valid/fresh accepted; legacy/nested foreign routes rejected). Glance
+changes require publication to watched branch `kube`; monitoring watches `main`.
+
 [2026-09-21 06:04 UTC] - Documented current GitOps setup and database recovery
 
 Repository and read-only cluster inspection confirmed Glance watches branch

@@ -2,8 +2,8 @@
 
 Run commands from the repository root with
 `-i ansible/inventory/homelab.yml`. The inventory contains the two Debian LXC
-hosts, the Proxmox host, Piloma, three Terraform-managed K3s VMs, and a
-stale entry for removed worker `k3s-worker-03`.
+hosts, the Proxmox host, Piloma, and three Terraform-managed K3s VMs.
+The retired `k3s-worker-03` entry has been removed.
 
 ## K3s
 
@@ -13,8 +13,7 @@ wrapper playbook:
 ```bash
 ansible-galaxy collection install -r ansible/requirements.yml
 ansible-playbook -i ansible/inventory/homelab.yml \
-  ansible/playbooks/k3s/setup-k3s.yml \
-  --limit 'k3s_cluster:!k3s-worker-03'
+  ansible/playbooks/k3s/setup-k3s.yml
 ```
 
 The wrapper imports `k3s.orchestration.site`, pins K3s to
@@ -26,17 +25,15 @@ endpoint. The declared cluster inventory is:
 | `server` | `k3s-cp-01` | `192.168.0.200` | Terraform VM |
 | `agent` | `k3s-worker-01` | `192.168.0.201` | Terraform VM |
 | `agent` | `k3s-worker-02` | `192.168.0.202` | Terraform VM |
-| `agent` | `k3s-worker-03` | `192.168.0.203` | Retired; stale inventory entry |
 
 Piloma (`192.168.0.14`) is outside the intended Kubernetes topology. It remains in the
 `reverse_proxy` group so Caddy can own the host's HTTP and HTTPS entry points.
-The unfiltered playbook also targets the retired worker. The command above
-excludes it. September 21 inspection found only the three Ready nodes at .200–202.
+Read-only inspection on September 24 found all three nodes Ready.
 
-`playbooks/k3s/update-debian.yml` currently targets a `k3s_nodes` group that is
-not present in the inventory. Ansible therefore warns and selects no hosts.
-Align that playbook with `k3s_cluster` (or add an intentional aggregate group)
-before using it for cluster maintenance.
+`playbooks/k3s/update-debian.yml` already targets `k3s_cluster`; the previous
+warning about an undefined `k3s_nodes` group was stale documentation. Preview
+the three selected hosts with `ansible-playbook -i ansible/inventory/homelab.yml
+ansible/playbooks/k3s/update-debian.yml --list-hosts` before maintenance.
 
 ## Jellyfin and Caddy
 
@@ -156,18 +153,65 @@ packages, and cleans the package cache for the `debian_lxc` group.
 
 ## Glance, Pi-hole and Caddy ownership
 
-Glance is reconciled by Argo CD from branch `kube` using [Kubernetes manifests](../kube/glance-dashboard/README.md).
-Caddy and Pi-hole both run on Piloma. Glance's HTTPS site forwards to
-`http://192.168.0.200:32041` (historical September 18 NodePort), preserving
-`glance.apps.alomalab.internal` for the Ingress host match. Its local DNS record
-must point to Piloma `192.168.0.14`; September 18 inspection returned `.200`.
-On September 21 Traefik uses HTTP NodePort **32546**. DNS and Caddy were not
-reverified; check the upstream before using the historical route.
+Glance is reconciled from branch `kube`; see the [Glance runbook](../kube/glance-dashboard/README.md).
+Caddy and Pi-hole run on Piloma. On **2026-09-24**, direct Pi-hole DNS queries
+resolved Glance, Grafana (the `*.apps.alomalab.internal` names), and Jellyfin to
+`192.168.0.14`. The September 18 DNS bypass is historical, not current.
+Clients must use Pi-hole and trust Caddy's internal CA.
 
-On September 18, the live Glance block was found **inside the Jellyfin Ansible-managed markers**.
-Move the Glance block outside those markers before rerunning
-`setup-jellyfin.yml`: its `blockinfile` task replaces that whole region with
-only the Jellyfin site. The playbook does not manage Glance, Pi-hole DNS,
-Caddy CA distribution, or the legacy `127.0.0.1:32759` HTTP fallback.
+Live Caddy currently proxies `*.apps.alomalab.internal` to
+`http://192.168.0.200:80`. That endpoint and HTTP NodePort **32546** both
+returned HTTP 200 for Glance's health endpoint. NodePort 32041 is obsolete;
+HTTPS NodePort remains 32055. The repository apps playbook uses the verified
+HTTP NodePort 32546 explicitly and preserves the original Host header, as
+required by the Traefik Ingress. Recheck the Service before any later run.
 
-See [architecture evidence and discrepancies](../docs/architecture.md#current-operational-discrepancies).
+The live wildcard block is still **inside Jellyfin's managed markers**.
+The Jellyfin playbook now refuses to replace a region containing any extra
+site. The new `playbooks/k3s/setup-apps-proxy.yml` owns a separate
+`ANSIBLE MANAGED K3S APPS` block and refuses conflicting or nested ownership.
+Both validate a candidate Caddyfile before replacing it and keep a backup.
+Neither playbook was executed against Piloma during this maintenance review.
+
+### One-time ownership migration (pending live work)
+
+Back up `/etc/caddy/Caddyfile`, then move the existing wildcard block out of
+Jellyfin's markers without changing its contents. Give it its own markers.
+The relevant excerpt should initially be:
+
+```caddyfile
+# BEGIN ANSIBLE MANAGED JELLYFIN
+jellyfin.alomalab.internal {
+    tls internal
+    reverse_proxy 192.168.0.103:8096
+}
+# END ANSIBLE MANAGED JELLYFIN
+
+# BEGIN ANSIBLE MANAGED K3S APPS
+*.apps.alomalab.internal {
+    tls internal
+    reverse_proxy http://192.168.0.200:80
+}
+# END ANSIBLE MANAGED K3S APPS
+```
+
+Preserve every other site. Validate with `sudo caddy validate --config
+/etc/caddy/Caddyfile --adapter caddyfile` before reloading Caddy. Then preview
+the independently managed apps route (this proposes switching port 80 to the
+verified NodePort):
+
+```bash
+kubectl -n kube-system get svc traefik
+ansible-playbook -i ansible/inventory/homelab.yml \
+  ansible/playbooks/k3s/setup-apps-proxy.yml --check --diff
+```
+
+After reviewing the diff, a separately authorized live run can omit
+`--check --diff`. Override `traefik_http_upstream` if the Service changes.
+Test HTTPS through Piloma and direct DNS queries afterwards. If validation or
+routing fails, restore the backup, validate it, and reload Caddy.
+
+Pi-hole DNS, CA distribution, and the live catch-all HTTP fallback
+`127.0.0.1:32546` remain outside repository management. Piloma is no longer a
+K3s node; that fallback needs a separate review before removal or replacement.
+See [current observations](../docs/architecture.md#current-operational-discrepancies).

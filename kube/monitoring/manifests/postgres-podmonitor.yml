@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: psql
+  namespace: psql
+  labels:
+    release: prometheus-community
+spec:
+  namespaceSelector:
+    matchNames:
+      - psql
+  selector:
+    matchLabels:
+      cnpg.io/cluster: psql
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics
+      scheme: http
+      interval: 30s

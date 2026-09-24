@@ -20,7 +20,7 @@ All abbreviated addresses above are on `192.168.0.0/24`.
 Current working-tree Terraform declares 2 vCPUs, 4096 MiB memory, no ballooning,
 and a 20 GiB disk for the control plane. Each worker has 2 vCPUs, 1538 MiB
 dedicated/floating memory, and a 16 GiB disk. These are configuration values,
-not verified applied Proxmox sizing; `k3s.tf` contains local edits.
+not verified applied Proxmox sizing.
 
 VMs use Ubuntu Jammy, module `terraform/modules/pve-vm`, bridge `vmbr0`, and
 gateway `192.168.0.1`. The reserved `k3szone` / `k3svnet` / `vmbr20`
@@ -40,9 +40,11 @@ Application definitions live in `kube/argocd/applications`. Both use project
 Both Git sources use `https://github.com/alsy4/alomalab.git`.
 Monitoring's Helm source reads `$values/kube/monitoring/values.yml` from the
 Git source with `ref: values`. That source also renders
-`kube/monitoring/manifests`. Its `postgres-podmonitor.yml` is currently empty.
-The live PodMonitor named `cluster-example` is not evidence that the new
-`psql` database is scraped.
+`kube/monitoring/manifests`. Its `postgres-podmonitor.yml` now declares a
+PodMonitor for `cnpg.io/cluster=psql`, namespace `psql`, HTTP port `metrics`
+(9187), path `/metrics`. CloudNativePG 1.30.0 exposes the exporter; the
+Prometheus selectors accept this monitor. The declaration is pending merge
+and reconciliation; live scraping was absent on September 24.
 
 No parent Application, Argo CD installation, or CloudNativePG installation is
 defined here. PostgreSQL is manually applied and is outside these Applications.
@@ -56,13 +58,18 @@ Traefik → application endpoints. Caddy-served hostnames should resolve to
 `192.168.0.14`; clients need to trust Caddy's internal CA.
 These Applications do not manage Caddy or Pi-hole.
 
-On 2026-09-21, Traefik exposed HTTP NodePort **32546** and HTTPS NodePort
-**32055**, advertising `192.168.0.200–202`. The previous HTTP port 32041 is
-historical. Caddy's current upstream and DNS records were not reverified.
+On **2026-09-24**, Traefik exposed HTTP NodePort **32546** and HTTPS
+NodePort **32055**, advertising `192.168.0.200–202`. Port 32041 is historical.
+Pi-hole directly resolved Glance, Grafana and Jellyfin to Piloma `.14`.
+Live Caddy forwards `*.apps.alomalab.internal` to `.200:80`; both port 80 and
+32546 returned HTTP 200 for Glance `/api/healthz`. The repository apps proxy
+playbook proposes the explicit NodePort 32546 after ownership migration.
 
 Glance's Traefik Ingress matches `glance.apps.alomalab.internal` and routes
 to Service `glance:8080`. Its Deployment has two replicas without an explicit
-spread rule. Kustomize generates hashed ConfigMaps from `glance.yml`,
+spread rule. The repository pins the currently observed image digest and adds
+startup, readiness and liveness probes at `/api/healthz`, plus CPU/memory
+requests and limits. These changes await publication to branch `kube`. Kustomize generates hashed ConfigMaps from `glance.yml`,
 `home.yml`, `start.yml`, `proxmox.yml`, and `assets/user.css`. They mount
 read-only at `/app/config` and `/app/assets`; no PVC is declared.
 The standalone `assets-configmap.yml` is not referenced by Kustomize.
@@ -71,14 +78,16 @@ The Proxmox widget disables server certificate verification.
 See the [Glance runbook](../kube/glance-dashboard/README.md).
 
 Grafana uses Traefik host `grafana.apps.alomalab.internal`. Monitoring and
-PostgreSQL share namespace `psql`. Monitoring values contain local edits;
-this review verifies application health, not that every configured Helm key,
-dashboard, rule, or scrape target is effective.
+PostgreSQL share namespace `psql`. On September 24 monitoring was
+OutOfSync/Progressing; this maintenance does not repair unrelated Helm or
+Grafana rollout issues.
 
 ## PostgreSQL storage and availability
 
-`kube/psql/psql.yml` declares Cluster `psql`, namespace `psql`, three
-instances, and 1 GiB storage per instance. Live PVCs use `local-path`.
+`kube/psql/psql.yml` declares Cluster `psql`, namespace `psql`, **two**
+instances, and 1 GiB storage per instance. On September 24 the live Cluster
+also requested two and reported two ready, primary `psql-1`. The three-instance
+observation on September 21 is historical. Live PVCs use `local-path`.
 Default bootstrap created database/user `app` and Secret `psql-app`.
 No backup configuration is declared.
 
@@ -94,20 +103,24 @@ host, so they also share that host's failure domain.
 
 ## Current operational discrepancies
 
-Read-only verification on **2026-09-21** found three Ready nodes, both Argo CD
-Applications Synced/Healthy, and PostgreSQL healthy with three ready instances,
-primary `psql-1`.
+Read-only verification on **2026-09-24** found three Ready nodes and Glance
+Synced/Healthy. PostgreSQL had two requested and two ready instances.
 
-- Earlier in this session, the permanently removed `k3s-worker-03` node record
-  and eight stale Pods were removed. Old database PVC/PV records cleared and
-  the replacement PostgreSQL cluster bootstrapped.
-- Ansible still lists worker 03 at `.203`; Terraform and the live node list
-  contain only `.200–202`. Exclude it during setup until inventory is corrected.
-- Worker 02 disk pressure briefly prevented the third database instance from
-  scheduling after cleanup. The subsequent readiness check succeeded.
-- The K3s update playbook targets undefined inventory group `k3s_nodes`.
-- DNS bypassing Caddy and Glance inside Jellyfin's managed Caddy markers were
-  observed on September 18; these historical findings were not reverified here.
+- Inventory now matches the three existing K3s VMs. The maintenance playbook
+  already targets `k3s_cluster`; the earlier undefined-group warning was stale.
+- Prometheus returned 21 active scrape targets, none for PostgreSQL. The only
+  live PodMonitor, `cluster-example`, selects a retired cluster label. The new
+  repository `psql` PodMonitor is not deployed yet; verify two UP database
+  targets after monitoring reconciles. Pruning is disabled, so the stale
+  monitor will remain until separately removed.
+- Monitoring was OutOfSync/Progressing; no live remediation was performed.
+- DNS bypassing Caddy is no longer reproduced by direct Pi-hole queries.
+  The wildcard apps Caddy route still sits inside Jellyfin's managed region.
+  Repository guards prevent overwriting it; the
+  [ownership migration](../ansible/README.md#one-time-ownership-migration-pending-live-work)
+  remains pending on Piloma.
+- The catch-all HTTP fallback on Piloma still points to `127.0.0.1:32546`;
+  its purpose/reachability was not established. It remains unmanaged.
 
 ## Other services and diagrams
 
@@ -116,7 +129,7 @@ Jellyfin receives writable `/mnt/media`, `/mnt/shared`, and `/mnt/media-2`.
 Ansible can install Jellyfin (8096), qBittorrent (8080), Radarr (7878), and
 Syncthing (8384 administration). Pairing Syncthing is manual. qBittorrent's
 default download path differs from the shared bind-mount target.
-Only Jellyfin's Caddy route is managed by its playbook.
+Jellyfin and Kubernetes apps have separate Caddy playbooks; DNS remains manual.
 See [Ansible operations](../ansible/README.md).
 
 The tracked `documentation-agent.yml` workflow updates docs and renders

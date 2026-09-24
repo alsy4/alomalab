@@ -45,7 +45,9 @@ kubectl apply -f kube/psql/psql.yml
 kubectl get clusters.postgresql.cnpg.io,pods,pvc -n psql
 ```
 
-It creates three instances, with live local-path storage. See
+The manifest declares two instances, matching the two ready live instances
+observed on September 24, with local-path storage. The September 21
+three-instance observation is historical. See
 [storage and failover](architecture.md#postgresql-storage-and-availability).
 A missing Pod requires checking Cluster status, operator logs, events, node
 health, and PVC ownership; applying a manifest successfully does not mean the
@@ -82,7 +84,9 @@ On September 21, both Applications were Synced/Healthy and PostgreSQL had
 three ready instances. Traefik HTTP/HTTPS NodePorts were 32546/32055.
 Caddy upstreams must match current ports; the historical 32041 value is stale.
 
-The PostgreSQL PodMonitor source file is empty, while a live PodMonitor named
-`cluster-example` remains. Verify actual Prometheus targets before claiming
-PostgreSQL metrics are configured. Application health alone does not validate
-scrape targets.
+The repository now declares PodMonitor `psql`; the live `cluster-example`
+monitor selects the wrong cluster. On September 24 Prometheus had no PostgreSQL
+targets and monitoring was OutOfSync/Progressing. After the new manifest reaches
+`main` and reconciles, follow the [monitoring checks](../kube/monitoring/README.md)
+and require both database targets to be UP. Application health alone does not
+validate scraping. No live changes were made during this review.
