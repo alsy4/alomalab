@@ -22,9 +22,10 @@
 │       │   ├── setup-jellyfin.yml               # Installs Jellyfin and manages its Caddy route
 │       │   ├── setup-mount-points.yml           # Manages Jellyfin LXC bind mounts with pct
 │       │   └── update-debian.yml                # Updates both Debian LXC hosts
-│       ├── pve-vm/
+│       ├── k3s/
+│       │   ├── setup-apps-proxy.yml             # Independently managed Caddy apps route
 │       │   ├── setup-k3s.yml                    # Imports the k3s-ansible cluster playbook
-│       │   └── update-debian.yml                # K3s update playbook; target group needs alignment
+│       │   └── update-debian.yml                # Updates the k3s_cluster inventory group
 │       └── nas/
 │           ├── samba-setup.yml                  # Configures authenticated Samba shares
 │           ├── samba-teardown.yml               # Removes Samba without deleting share data
@@ -46,8 +47,9 @@
 ├── kube/
 │   ├── argocd/applications/                    # Glance and monitoring Applications
 │   ├── monitoring/
+│   │   ├── README.md                          # PostgreSQL scrape verification
 │   │   ├── values.yml                         # Helm values for kube-prometheus-stack
-│   │   └── manifests/postgres-podmonitor.yml   # Empty placeholder
+│   │   └── manifests/postgres-podmonitor.yml   # Scrapes Cluster psql metrics
 │   ├── psql/psql.yml                          # Manually applied CloudNativePG Cluster
 │   └── glance-dashboard/
 │       ├── README.md                          # Credentials and routing
