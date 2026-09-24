@@ -1,0 +1,56 @@
+---
+- name: Configure Piloma's Kubernetes application route
+  hosts: reverse_proxy
+  become: true
+  gather_facts: false
+  vars:
+    caddyfile: /etc/caddy/Caddyfile
+    # Recheck `kubectl -n kube-system get svc traefik` before applying.
+    traefik_http_upstream: http://192.168.0.200:32546
+    apps_domain: apps.alomalab.internal
+    apps_marker_pattern: '(?ms)^# BEGIN ANSIBLE MANAGED K3S APPS\n.*?^# END ANSIBLE MANAGED K3S APPS\n?'
+  tasks:
+    - name: Read the existing Caddyfile
+      ansible.builtin.slurp:
+        src: "{{ caddyfile }}"
+      register: apps_caddy_config
+      no_log: true
+
+    - name: Require separate and unambiguous ownership of the apps route
+      ansible.builtin.assert:
+        that:
+          - caddy_text.count('# BEGIN ANSIBLE MANAGED K3S APPS') == caddy_text.count('# END ANSIBLE MANAGED K3S APPS')
+          - caddy_text.count('# BEGIN ANSIBLE MANAGED K3S APPS') <= 1
+          - apps_domain not in (caddy_text | regex_replace(apps_marker_pattern, ''))
+          - "'# BEGIN ANSIBLE MANAGED K3S APPS' not in jellyfin_region"
+          - >-
+            caddy_text.count('# BEGIN ANSIBLE MANAGED K3S APPS') == 0 or
+            (apps_region | regex_search(apps_only_pattern)) is not none
+        fail_msg: >-
+          An apps route already exists outside its own markers, or the managed
+          region contains unexpected content. Follow the ownership migration in
+          ansible/README.md before running this playbook; existing routes are preserved.
+      vars:
+        caddy_text: "{{ apps_caddy_config.content | b64decode }}"
+        jellyfin_region: "{{ caddy_text | regex_search('(?s)(?<=# BEGIN ANSIBLE MANAGED JELLYFIN\n).*?(?=# END ANSIBLE MANAGED JELLYFIN)') | default('', true) }}"
+        apps_region: "{{ caddy_text | regex_search('(?s)(?<=# BEGIN ANSIBLE MANAGED K3S APPS\n).*?(?=# END ANSIBLE MANAGED K3S APPS)') | default('', true) }}"
+        apps_only_pattern: '(?s)^\s*\*\.{{ apps_domain | regex_escape }}\s*\{\s*tls\s+internal\s+reverse_proxy\s+[^\s{}]+\s*\}\s*$'
+
+    - name: Manage the apps site independently of Jellyfin
+      ansible.builtin.blockinfile:
+        path: "{{ caddyfile }}"
+        marker: "# {mark} ANSIBLE MANAGED K3S APPS"
+        backup: true
+        validate: "caddy validate --config %s --adapter caddyfile"
+        block: |
+          *.{{ apps_domain }} {
+              tls internal
+              reverse_proxy {{ traefik_http_upstream }}
+          }
+      notify: Reload Caddy
+
+  handlers:
+    - name: Reload Caddy
+      ansible.builtin.service:
+        name: caddy
+        state: reloaded
