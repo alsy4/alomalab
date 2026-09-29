@@ -7,3 +7,12 @@ spec:
   instances: 2
   storage:
     size: 1Gi
+  managed:
+    services:
+      additional:
+        - selectorType: rw
+          serviceTemplate:
+            metadata:
+              name: ingestor-db
+            spec:
+              type: LoadBalancer
