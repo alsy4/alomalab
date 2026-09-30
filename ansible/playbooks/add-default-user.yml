@@ -1,0 +1,26 @@
+---
+- name: Create the default SSH user on managed guests
+  hosts: debian_lxc:k3s_cluster
+  become: true
+
+  tasks:
+    - name: Create User group
+      ansible.builtin.group:
+        name: User
+        state: present
+
+    - name: Create aloma with a home directory
+      ansible.builtin.user:
+        name: aloma
+        group: User
+        home: /home/aloma
+        create_home: true
+        shell: /bin/bash
+        password_lock: true
+        state: present
+
+    - name: Install aloma SSH public key
+      ansible.posix.authorized_key:
+        user: aloma
+        key: "{{ lookup('ansible.builtin.file', aloma_ssh_public_key_file) }}"
+        state: present
