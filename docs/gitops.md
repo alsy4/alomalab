@@ -20,11 +20,11 @@ their sources, destinations, or sync policy.
 
 ## Deploy changes
 
-| Change | Edit | Publish to |
-| --- | --- | --- |
-| Glance configuration, CSS, workload, routing | `kube/glance-dashboard/` | Branch `kube` |
-| Monitoring Helm values | `kube/monitoring/values.yml` | Branch `main` |
-| Additional monitoring resources | `kube/monitoring/manifests/` | Branch `main` |
+| Change                                       | Edit                         | Publish to    |
+| -------------------------------------------- | ---------------------------- | ------------- |
+| Glance configuration, CSS, workload, routing | `kube/glance-dashboard/`     | Branch `kube` |
+| Monitoring Helm values                       | `kube/monitoring/values.yml` | Branch `main` |
+| Additional monitoring resources              | `kube/monitoring/manifests/` | Branch `main` |
 
 Argo CD automatically reconciles these sources. Glance enables pruning;
 monitoring does not, so removing a monitoring manifest from Git does not
