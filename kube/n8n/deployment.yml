@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: n8n
+  name: n8n
+  namespace: n8n
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: n8n
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: n8n
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - image: docker.n8n.io/n8nio/n8n:2.41.4
+          name: n8n
+          ports:
+            - containerPort: 5678
+          volumeMounts:
+            - name: data
+              mountPath: /home/node/.n8n
+          resources: {}
+          env:
+            - name: DB_TYPE
+              value: postgresdb
+            - name: DB_POSTGRESDB_HOST
+              value: psql-rw.psql.svc.cluster.local
+            - name: DB_POSTGRESDB_PORT
+              value: "5432"
+            - name: DB_POSTGRESDB_DATABASE
+              value: app
+            - name: DB_POSTGRESDB_USER
+              value: app
+            - name: DB_POSTGRESDB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: psql-app
+                  key: password
+
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: n8n-data
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: n8n
+  name: n8n
+  namespace: n8n
+spec:
+  ports:
+    - name: 5678-5678
+      port: 5678
+      protocol: TCP
+      targetPort: 5678
+  selector:
+    app: n8n
+  type: ClusterIP
+status:
+  loadBalancer: {}
