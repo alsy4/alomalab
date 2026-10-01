@@ -18,6 +18,7 @@ spec:
       labels:
         app: n8n
     spec:
+      enableServiceLinks: false
       securityContext:
         fsGroup: 1000
       containers:
@@ -30,6 +31,12 @@ spec:
               mountPath: /home/node/.n8n
           resources: {}
           env:
+            - name: N8N_EDITOR_BASE_URL
+              value: https://n8n.apps.alomalab.internal
+            - name: N8N_WEBHOOK_URL
+              value: https://n8n.apps.alomalab.internal
+            - name: N8N_PROXY_HOPS
+              value: "2"
             - name: DB_TYPE
               value: postgresdb
             - name: DB_POSTGRESDB_HOST
